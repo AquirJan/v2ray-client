@@ -70,6 +70,12 @@
         </div>
         <!-- <div>Port: {{item.port}}</div> -->
         <div class="cntr-mb">uuid: {{item.uuid}}</div>
+        <div class="list-info">
+          <span>上行：{{formatSize(item.up)}}</span>
+          <span>下行：{{formatSize(item.down)}}</span>
+          <span>total：{{formatSize(item.up+item.down)}}</span>
+          <button type="button" class="btn btn-info" @click="resetBandWidth($event, item)">reset</button>
+        </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
           <input type="date" class="form-control inline-form-control" v-model="item.offDateFormat"/>
@@ -113,6 +119,20 @@ export default {
     }
   },
   methods: {
+    resetBandWidth($event, item, index) {
+      axios.post('/v2ray/resetBandWidth', item).then(res => {
+        alert(res.msg)
+        this.getList()
+      })
+    },
+    formatSize(size, pointLength, units) {
+      let unit;
+      units = units || [ 'B', 'KB', 'MB', 'GB', 'TB', 'PB' ];
+      while ( (unit = units.shift()) && size > 1024 ) {
+        size = size / 1024;
+      }
+      return (unit === 'B' ? size : size.toFixed( pointLength === undefined ? 2 : pointLength)) + unit;
+    },
     addMonths(date, months) {
       let d = date.getDate();
       date.setMonth(date.getMonth() + +months);
@@ -266,5 +286,12 @@ export default {
   grid-template-columns: 1fr auto;
   grid-gap: 0 1rem;
   align-items: center;
+}
+.list-info {
+  display: grid;
+  grid-auto-flow: column;
+  grid-gap: 0 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 </style>
