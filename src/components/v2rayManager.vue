@@ -61,29 +61,40 @@
       <li class="text-center cntr-p" v-if="!loadingList && listData.length <= 0">NoData</li>
       <li class="list-group-item" v-for="(item, index) in listData" :key="index">
         <div class="list-title cntr-mb">
-          <span>Email: {{item.email}} [{{item.remark}}]</span>
-          <span class="badge badge-dark" v-if="calcOverDue(item)">overdue</span>
+          <span v-if="!item.needUpdate">Email: {{item.email}} [{{item.remark}}]</span>
+          <template v-else>
+            <div>Email: <input class="form-control inline-form-control" v-model="item.email" /></div>
+            <div>Remark: <input class="form-control inline-form-control" v-model="item.remark" /></div>
+          </template>
+          <span class="badge badge-dark" v-if="calcOverDue(item) && !item.needUpdate">overdue</span>
         </div>
         <!-- <div>Port: {{item.port}}</div> -->
         <div class="cntr-mb">uuid: {{item.uuid}}</div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
           <input type="date" class="form-control inline-form-control" v-model="item.offDateFormat"/>
+          <!-- <input type="number" class="form-control inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="2"/> -->
         </div>
-        <button type="button" class="btn btn-info" @click="changeOffDate($event, item)">change date</button>
+        <div class="addon-btns">
+          <button type="button" class="btn btn-info" @click="changeOffDate($event, item)">change date</button>
+          <button type="button" class="btn btn-secondary" v-if="!item.needUpdate" @click="changeNeedUpdate($event, item, index)">modify</button>
+          <div class="btn-group" role="group" aria-label="Basic example" v-else>
+            <button type="button" class="btn btn-success"  @click="updateClient($event, item, index)">update</button>
+            <button type="button" class="btn btn-danger" @click="cancelUpdate($event, item, index)">cancel</button>
+          </div>
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
 <script>
-// import clacOffDate from './calcOffDate'
+import cloneDeep from '../assets/lodash.clonedeep.js'
 const uuidv1 = require('uuid/v1');
 import axios from 'axios'
 export default {
   name: 'v2rayManager',
   components: {
-    // clacOffDate
   },
   data() {
     return {
@@ -102,6 +113,30 @@ export default {
     }
   },
   methods: {
+    addMonths(date, months) {
+      let d = date.getDate();
+      date.setMonth(date.getMonth() + +months);
+      if (date.getDate() != d) {
+        date.setDate(0);
+      }
+      return date;
+    },
+    addMonth($event, item, index) {
+      const _value = $event.target.value;
+      console.log(_value)
+      let _offDate = new Date(item.offDate)
+      console.log(this.addMonths(_offDate, _value).toString())
+      const _newOffDate = new Date(this.addMonths(_offDate, _value).toString()).format('yyyy-MM-dd');
+      let _listData = cloneDeep(this.listData);
+      _listData[index]['offDateFormat'] = _newOffDate;
+      this.$set(this,'listData', _listData)
+      console.log(_newOffDate)
+    },
+    cancelUpdate($event, item, index) {
+      let _listData = cloneDeep(this.listData);
+      _listData[index]['needUpdate'] = false;
+      this.$set(this,'listData', _listData)
+    },
     resetAction(){
       this.filterContent = ''
       this.listData = this.listDataOrigin;
@@ -134,6 +169,17 @@ export default {
         id: item.id,
         offDate: item.offDateFormat
       }).then(res => {
+        alert(res.msg)
+        this.getList()
+      })
+    },
+    changeNeedUpdate($event, item, index) {
+      let _listData = cloneDeep(this.listData);
+      _listData[index]['needUpdate'] = true;
+      this.$set(this,'listData', _listData)
+    },
+    updateClient($event, item) {
+      axios.post('/v2ray/updateClient', item).then(res => {
         alert(res.msg)
         this.getList()
       })
@@ -176,6 +222,7 @@ export default {
           this.listData = res.data;
           this.listData.forEach((val) => {
             val['offDateFormat'] = new Date(val.offDate).format('yyyy-MM-dd')
+            val['needUpdate'] = false;
           })
           this.listDataOrigin = this.listData;
         }
@@ -196,6 +243,11 @@ export default {
   grid-template-columns: auto 1fr auto;
   grid-gap: 0 1rem; */
 }
+.addon-btns {
+  display: grid;
+  justify-content: space-between;
+  grid-auto-flow: column;
+}
 .search-content {
   display: grid;
   grid-template-columns: 1fr auto;
@@ -204,7 +256,7 @@ export default {
 .change-date-wrap {
   margin-bottom: 1rem;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto;
   align-items: center;
   grid-gap: 0 1rem;
