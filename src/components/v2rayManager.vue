@@ -1,49 +1,51 @@
 <template>
-  <div class="container">
+  <div >
+    <div class="container">
     <h2>v2ray manager</h2>
-    <form >
-      <div class="form-group">
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" >email</span>
-          </div>
-          <input type="text" class="form-control" v-model="form.email"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" >remark</span>
-          </div>
-          <input type="text" class="form-control" v-model="form.remark"/>
-        </div>
-      </div>
-      <div class="form-group">
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" >uuid</span>
-          </div>
-          <input type="text" class="form-control" v-model="form.uuid"/>
-          <div class="input-group-append">
-            <button type="button" class="btn btn-primary" @click="generateUUID">generate</button>
+      <form >
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >email</span>
+            </div>
+            <input type="text" class="form-control" v-model="form.email"/>
           </div>
         </div>
-      </div>
-      <div class="form-group">
-        <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <span class="input-group-text" >offDate</span>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >remark</span>
+            </div>
+            <input type="text" class="form-control" v-model="form.remark"/>
           </div>
-          <input type="date" class="form-control" v-model="form.offDate"/>
         </div>
-      </div>
-      <div class="form-group text-right">
-        <div class="btn-group " role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-secondary" @click="resetForm">reset</button>
-          <button type="button" class="btn btn-success" @click="submitForm">submit</button>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >uuid</span>
+            </div>
+            <input type="text" class="form-control" v-model="form.uuid"/>
+            <div class="input-group-append">
+              <button type="button" class="btn btn-primary" @click="generateUUID">generate</button>
+            </div>
+          </div>
         </div>
-      </div>
-    </form>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >offDate</span>
+            </div>
+            <input type="date" class="form-control" v-model="form.offDate"/>
+          </div>
+        </div>
+        <div class="form-group text-right">
+          <div class="btn-group " role="group" aria-label="Basic example">
+            <button type="button" class="btn btn-secondary" @click="resetForm">reset</button>
+            <button type="button" class="btn btn-success" @click="submitForm">submit</button>
+          </div>
+        </div>
+      </form>
+    </div>
     <!-- <clacOffDate /> -->
     <div class="cntr-mb search-wrap">
       <h3>search list</h3>
