@@ -25,4 +25,7 @@ export default {
 .clear-mb {
   margin-bottom: 0;
 }
+.full-width {
+  width: 100%;
+}
 </style>

@@ -71,7 +71,8 @@
           <span class="badge badge-dark" v-if="calcOverDue(item) && !item.needUpdate">overdue</span>
         </div>
         <!-- <div>Port: {{item.port}}</div> -->
-        <div class="cntr-mb">uuid: {{item.uuid}}</div>
+        <div class="cntr-mb" v-if="!item.needUpdate">uuid: {{item.uuid}}</div>
+        <div class="cntr-mb uuid-modify" v-else><span>uuid: </span><input class="form-control inline-form-control full-width" v-model="item.uuid" /></div>
         <div class="list-info">
           <span>上行：{{formatSize(item.up)}}</span>
           <span>下行：{{formatSize(item.down)}}</span>
@@ -85,7 +86,10 @@
         </div>
         <div class="addon-btns">
           <button type="button" class="btn btn-info" @click="changeOffDate($event, item)">change date</button>
-          <button type="button" class="btn btn-secondary" v-if="!item.needUpdate" @click="changeNeedUpdate($event, item, index)">modify</button>
+          <div class="btn-group" role="group" aria-label="Basic example" v-if="!item.needUpdate">
+            <button type="button" class="btn btn-secondary"  @click="changeNeedUpdate($event, item, index)">modify</button>
+            <button type="button" class="btn btn-danger"  @click="deleteAction($event, item, index)">delete</button>
+          </div>
           <div class="btn-group" role="group" aria-label="Basic example" v-else>
             <button type="button" class="btn btn-success"  @click="updateClient($event, item, index)">update</button>
             <button type="button" class="btn btn-danger" @click="cancelUpdate($event, item, index)">cancel</button>
@@ -145,14 +149,11 @@ export default {
     },
     addMonth($event, item, index) {
       const _value = $event.target.value;
-      console.log(_value)
       let _offDate = new Date(item.offDate)
-      console.log(this.addMonths(_offDate, _value).toString())
       const _newOffDate = new Date(this.addMonths(_offDate, _value).toString()).format('yyyy-MM-dd');
       let _listData = cloneDeep(this.listData);
       _listData[index]['offDateFormat'] = _newOffDate;
       this.$set(this,'listData', _listData)
-      console.log(_newOffDate)
     },
     cancelUpdate($event, item, index) {
       let _listData = cloneDeep(this.listData);
@@ -162,6 +163,15 @@ export default {
     resetAction(){
       this.filterContent = ''
       this.listData = this.listDataOrigin;
+    },
+    deleteAction($event, item, index) {
+      const _confirm = confirm('删除账号?')
+      if (_confirm) {
+        axios.post('/v2ray/deleteClient', {id:item.id}).then(res => {
+          this.getList()
+          alert(res.msg)
+        })
+      }
     },
     calcOverDue(item) {
       // console.log(item)
@@ -183,6 +193,7 @@ export default {
     },
     restartService() {
       axios.post('/v2ray/restartService').then(res => {
+        this.getList()
         alert(res.msg)
       })
     },
@@ -261,9 +272,16 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .search-wrap {
+  padding: 0 1rem;
   /* display: grid;
   grid-template-columns: auto 1fr auto;
   grid-gap: 0 1rem; */
+}
+.uuid-modify {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 0 1rem;
+  align-items: center;
 }
 .addon-btns {
   display: grid;
