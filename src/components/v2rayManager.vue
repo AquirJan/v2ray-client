@@ -56,7 +56,10 @@
           <button type="button" class="btn btn-primary" @click="filterAction">search</button>
         </div>
       </div>
-      <button type="button" class="btn btn-dark" @click="restartService">restart service</button>
+      <div class="cntr-flex justify-between">
+        <button type="button" class="btn btn-dark" @click="restartService">restart service</button>
+        <button type="button" class="btn btn-primary" @click="updateDataTrafficAction">update traffic</button>
+      </div>
     </div>
     <ul class="list-group list-group-flush">
       <li class="text-center cntr-p" v-if="loadingList">Loading...</li>
@@ -219,6 +222,12 @@ export default {
     },
     generateUUID() {
       this.form.uuid = uuidv1()
+    },
+    updateDataTrafficAction(){
+      axios.post('/v2ray/updateDataTraffic', item).then(res => {
+        alert(res.msg)
+        this.getList()
+      })
     },
     submitForm() {
       if (!this.form.email) {
