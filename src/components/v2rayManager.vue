@@ -105,6 +105,7 @@
 
 <script>
 import cloneDeep from '../assets/lodash.clonedeep.js'
+// import dialogPop from './dialog.js'
 const uuidv1 = require('uuid/v1');
 import axios from 'axios'
 export default {
@@ -224,7 +225,7 @@ export default {
       this.form.uuid = uuidv1()
     },
     updateDataTrafficAction(){
-      axios.post('/v2ray/updateDataTraffic', item).then(res => {
+      axios.post('/v2ray/updateDataTraffic').then(res => {
         alert(res.msg)
         this.getList()
       })
