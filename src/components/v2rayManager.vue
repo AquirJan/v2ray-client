@@ -202,10 +202,7 @@ export default {
       })
     },
     changeOffDate($event, item) {
-      axios.post('/v2ray/changeOffDate', {
-        id: item.id,
-        offDate: item.offDateFormat
-      }).then(res => {
+      axios.post('/v2ray/changeOffDate', item).then(res => {
         alert(res.msg)
         this.getList()
       })
