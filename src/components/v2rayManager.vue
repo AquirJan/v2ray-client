@@ -84,11 +84,14 @@
         </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
-          <input type="date" class="form-control inline-form-control" v-model="item.offDateFormat"/>
-          <!-- <input type="number" class="form-control inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="2"/> -->
+          <input type="date" class="form-control inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
+          <input type="number" class="form-control inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="1"/>
         </div>
         <div class="addon-btns">
-          <button type="button" class="btn btn-info" @click="changeOffDate($event, item)">change date</button>
+          <div class="btn-group" role="group" aria-label="Basic example" >
+            <button type="button" class="btn btn-info" @click="changeOffDate($event, item, index)">change date</button>
+            <button type="button" class="btn btn-warning" :disabled="item.noChanged" @click="resetOffDate($event, item, index)">reset date</button>
+          </div>
           <div class="btn-group" role="group" aria-label="Basic example" v-if="!item.needUpdate">
             <button type="button" class="btn btn-secondary"  @click="changeNeedUpdate($event, item, index)">modify</button>
             <button type="button" class="btn btn-danger"  @click="deleteAction($event, item, index)">delete</button>
@@ -129,6 +132,41 @@ export default {
     }
   },
   methods: {
+    renewMonth(offDate, mth){
+      const _dateObj = new Date(offDate)
+      let _year = _dateObj.getFullYear();
+      let _month = Number(_dateObj.getMonth()+1)
+      let _day = _dateObj.getDate();
+      const renew = mth
+      let _tmpSumMonths = Number(renew)+Number(_month);
+      let _plusYears = Math.floor(_tmpSumMonths/12);
+      if (_month === 12 && _tmpSumMonths >= 24) {
+        _plusYears = _plusYears - 1;
+      }
+      if (_tmpSumMonths === 12) {
+        _plusYears = 0
+      }
+      let _newMonth = _tmpSumMonths%12;
+      _newMonth = _newMonth === 0 ? 12 : _newMonth;
+      let _newYear = _year+_plusYears
+      const newMonthDays = new Date(_newYear, _newMonth, 0).getDate();
+      const _newDay = (_day - newMonthDays) >= 0 ? newMonthDays : _day;
+      _newMonth = _newMonth === 0 ? 12 : _newMonth;
+      const _finalDate = new Date(`${_newYear}-${_newMonth}-${_newDay}`)
+      return _finalDate.format('yyyy-MM-dd')
+    },
+    changeOffDateFromDate($event, item, index) {
+      const _value = $event.target.value;
+      const _newOffDate = _value+' 00:00:00'
+      
+      this.$set(this.listData[index], 'offDate', _newOffDate)
+      this.$set(this.listData[index], 'noChanged', false)
+    },
+    resetOffDate($event, item, index) {
+      this.$set(this.listData[index], 'offDate', this.listDataOrigin[index].offDate)
+      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].offDate).format('yyyy-MM-dd'))
+      this.$set(this.listData[index], 'noChanged', true)
+    },
     resetBandWidth($event, item, index) {
       axios.post('/v2ray/resetBandWidth', item).then(res => {
         alert(res.msg)
@@ -143,30 +181,24 @@ export default {
       }
       return (unit === 'B' ? size : size.toFixed( pointLength === undefined ? 2 : pointLength)) + unit;
     },
-    addMonths(date, months) {
-      let d = date.getDate();
-      date.setMonth(date.getMonth() + +months);
-      if (date.getDate() != d) {
-        date.setDate(0);
-      }
-      return date;
-    },
     addMonth($event, item, index) {
       const _value = $event.target.value;
-      let _offDate = new Date(item.offDate)
-      const _newOffDate = new Date(this.addMonths(_offDate, _value).toString()).format('yyyy-MM-dd');
-      let _listData = cloneDeep(this.listData);
-      _listData[index]['offDateFormat'] = _newOffDate;
-      this.$set(this,'listData', _listData)
+      let _offDate = item.offDate
+      const _newOffDate = this.renewMonth(_offDate, _value);
+
+      this.$set(this.listData[index], 'offDateFormat', _newOffDate)
+      this.$set(this.listData[index], 'offDate', _newOffDate+' 00:00:00')
+      this.$set(this.listData[index], 'noChanged', false)
     },
     cancelUpdate($event, item, index) {
       let _listData = cloneDeep(this.listData);
       _listData[index]['needUpdate'] = false;
       this.$set(this,'listData', _listData)
+      
     },
     resetAction(){
       this.filterContent = ''
-      this.listData = this.listDataOrigin;
+      this.listData = cloneDeep(this.listDataOrigin);
     },
     deleteAction($event, item, index) {
       const _confirm = confirm('删除账号?')
@@ -187,7 +219,7 @@ export default {
     },
     filterAction() {
       if (!this.filterContent) {
-        this.listData = this.listDataOrigin;
+        this.listData = cloneDeep(this.listDataOrigin);
       } else {
         const _reg = new RegExp(this.filterContent, 'gi')
         this.listData = this.listData.filter(val => {
@@ -263,8 +295,9 @@ export default {
           this.listData.forEach((val) => {
             val['offDateFormat'] = new Date(val.offDate).format('yyyy-MM-dd')
             val['needUpdate'] = false;
+            val['noChanged'] = true;
           })
-          this.listDataOrigin = this.listData;
+          this.listDataOrigin = cloneDeep(this.listData);
         }
       })
     }
