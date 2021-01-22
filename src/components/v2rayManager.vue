@@ -26,7 +26,7 @@
             </div>
             <input type="text" class="form-control" v-model="form.uuid"/>
             <div class="input-group-append">
-              <button type="button" class="btn btn-primary" @click="generateUUID">generate</button>
+              <button type="button" class="btn btn-primary btn-sm" @click="generateUUID">generate</button>
             </div>
           </div>
         </div>
@@ -38,10 +38,18 @@
             <input type="date" class="form-control" v-model="form.offDate"/>
           </div>
         </div>
+        <div class="form-group">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >price</span>
+            </div>
+            <input type="number" step="0.01" class="form-control" v-model="form.price"/>
+          </div>
+        </div>
         <div class="form-group text-right">
           <div class="btn-group " role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-secondary" @click="resetForm">reset</button>
-            <button type="button" class="btn btn-success" @click="submitForm">submit</button>
+            <button type="button" class="btn btn-secondary btn-sm" @click="resetForm">reset</button>
+            <button type="button" class="btn btn-success btn-sm" @click="submitForm">submit</button>
           </div>
         </div>
       </form>
@@ -52,13 +60,13 @@
       <div class="search-content cntr-mb">
         <input type="text" style="height: auto;" class="form-control inline-form-control" v-model="filterContent" @keydown.enter="filterAction"/>
         <div class="btn-group " role="group" aria-label="Basic example">
-          <button type="button" class="btn btn-secondary" @click="resetAction">reset</button>
-          <button type="button" class="btn btn-primary" @click="filterAction">search</button>
+          <button type="button" class="btn btn-secondary btn-sm" @click="resetAction">reset</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="filterAction">search</button>
         </div>
       </div>
       <div class="cntr-flex justify-between">
-        <button type="button" class="btn btn-dark" @click="restartService">restart service</button>
-        <button type="button" class="btn btn-primary" @click="updateDataTrafficAction">update traffic</button>
+        <button type="button" class="btn btn-dark btn-sm" @click="restartService">restart service</button>
+        <button type="button" class="btn btn-primary btn-sm" @click="updateDataTrafficAction">update traffic</button>
       </div>
     </div>
     <ul class="list-group list-group-flush">
@@ -80,7 +88,7 @@
           <span>上行：{{formatSize(item.up)}}</span>
           <span>下行：{{formatSize(item.down)}}</span>
           <span>total：{{formatSize(item.up+item.down)}}</span>
-          <button type="button" class="btn btn-info" @click="resetBandWidth($event, item)">reset</button>
+          <button type="button" class="btn btn-info btn-sm" @click="resetBandWidth($event, item)">reset</button>
         </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
@@ -89,16 +97,16 @@
         </div>
         <div class="addon-btns">
           <div class="btn-group" role="group" aria-label="Basic example" >
-            <button type="button" class="btn btn-info" @click="changeOffDate($event, item, index)">change date</button>
-            <button type="button" class="btn btn-warning" :disabled="item.noChanged" @click="resetOffDate($event, item, index)">reset date</button>
+            <button type="button" class="btn btn-info btn-sm" @click="changeOffDate($event, item, index)">change date</button>
+            <button type="button" class="btn btn-warning btn-sm" :disabled="item.noChanged" @click="resetOffDate($event, item, index)">reset date</button>
           </div>
           <div class="btn-group" role="group" aria-label="Basic example" v-if="!item.needUpdate">
-            <button type="button" class="btn btn-secondary"  @click="changeNeedUpdate($event, item, index)">modify</button>
-            <button type="button" class="btn btn-danger"  @click="deleteAction($event, item, index)">delete</button>
+            <button type="button" class="btn btn-secondary btn-sm"  @click="changeNeedUpdate($event, item, index)">modify</button>
+            <button type="button" class="btn btn-danger btn-sm"  @click="deleteAction($event, item, index)">delete</button>
           </div>
           <div class="btn-group" role="group" aria-label="Basic example" v-else>
-            <button type="button" class="btn btn-success"  @click="updateClient($event, item, index)">update</button>
-            <button type="button" class="btn btn-danger" @click="cancelUpdate($event, item, index)">cancel</button>
+            <button type="button" class="btn btn-success btn-sm"  @click="updateClient($event, item, index)">update</button>
+            <button type="button" class="btn btn-danger btn-sm" @click="cancelUpdate($event, item, index)">cancel</button>
           </div>
         </div>
       </li>
@@ -122,8 +130,9 @@ export default {
         email: '',
         offDate: '',
         uuid: '',
-        port: 80,
-        remark: ''
+        port: 443,
+        remark: '',
+        price: 15.00
       },
       filterContent: '',
       loadingList: false,
@@ -268,7 +277,9 @@ export default {
         alert('uuid not avaliable')
         return;
       }
-      axios.post('/v2ray/add', this.form).then(res => {
+      console.log(this.form)
+      return;
+      axios.post('/v2ray/addClient', this.form).then(res => {
         alert(res.msg)
         if (res.success) {
           this.getList();
@@ -280,7 +291,8 @@ export default {
       this.$set(this, 'form', {
         uuid: '',
         email: '',
-        port: 80,
+        port: 443,
+        price: 15.00,
         offDate: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy-MM-dd')
       });
     },
