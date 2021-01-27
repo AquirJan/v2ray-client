@@ -63,20 +63,11 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  
   const authRequired = !publicPages.includes(to.name);
-  const loggedIn = localStorage.getItem('user');
+  const token = localStorage.getItem('user');
   if (authRequired) {
-    if (loggedIn) {
-      axios.post('/v2ray/verifyToken', {token: loggedIn}).then(res => {
-        if (res.success) {
-          next();
-        } else {
-          next({
-            name: 'login'
-          });
-        }
-      })
+    if (token) {
+      next();
     } else {
       next({
         name: 'login'

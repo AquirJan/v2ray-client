@@ -28,4 +28,24 @@ export default {
 .full-width {
   width: 100%;
 }
+.cntr-grid {
+  display: grid;
+}
+.cntr-gaf-column{
+  grid-auto-flow: column;
+}
+.cntr-gg-medium {
+  grid-gap: 1rem;
+}
+.cntr-gg-xsm {
+  grid-gap: .5rem;
+}
+.icom {
+  display: inline-grid;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
 </style>

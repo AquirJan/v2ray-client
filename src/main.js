@@ -4,6 +4,7 @@ import './assets/bootstrap.min.css'
 import './assets/ajinit.css'
 import router from './routes'
 import axios from 'axios';
+import store from './store'
 
 Date.prototype.format = function (fmt) { //author: meizz 
   var o = {
@@ -24,6 +25,9 @@ Date.prototype.format = function (fmt) { //author: meizz
 Vue.config.productionTip = false
 
 axios.interceptors.request.use(function (config) {
+  if (localStorage.getItem('user')) {
+    config.headers['token'] = localStorage.getItem('user')
+  }
   // Do something before request is sent
   return config;
 }, function (error) {
@@ -35,6 +39,12 @@ axios.interceptors.request.use(function (config) {
 axios.interceptors.response.use(function (response) {
   // Any status code that lie within the range of 2xx cause this function to trigger
   // Do something with response data
+  if (response.data && response.data.code && response.data.code === 401) {
+    localStorage.removeItem('user')
+    router.push({
+      name: 'login'
+    })
+  }
   return response.data;
 }, function (error) {
   // Any status codes that falls outside the range of 2xx cause this function to trigger
@@ -44,5 +54,6 @@ axios.interceptors.response.use(function (response) {
 
 new Vue({
   render: h => h(App),
-  router
+  router,
+  store: store,
 }).$mount('#app')

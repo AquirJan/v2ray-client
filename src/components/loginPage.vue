@@ -2,18 +2,11 @@
   <div class="login-wrap cntr-flex aligni-center justify-center">
     <form class="login-cell">
       <div class="form-group">
-        <!-- <label for="exampleInputEmail1">accout</label> -->
-        <input v-model="form.name" type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="account">
-        <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
+        <input v-model="form.name" type="text" class="form-control" aria-describedby="Account" placeholder="Account">
       </div>
       <div class="form-group">
-        <!-- <label for="exampleInputPassword1">Password</label> -->
-        <input v-model="form.password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+        <input v-model="form.password" type="password" class="form-control" aria-describedby="Password" placeholder="Password">
       </div>
-      <!-- <div class="form-group form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1">
-        <label class="form-check-label" for="exampleCheck1">Check me out</label>
-      </div> -->
       <div class="text-right">
         <button type="submit" class="btn btn-success" :disabled="loading" @click="loginAction">Sign In</button>
       </div>
@@ -40,6 +33,7 @@
 </style>
 <script>
 import axios from 'axios'
+import * as md5 from 'md5'
 export default {
   name: 'loginPage',
   data() {
@@ -60,14 +54,18 @@ export default {
         return alert('fill password')
       }
       this.loading = true;
-      axios.post('/v2ray/loginManager', this.form).then(res => {
-        this.loading = false;
+      const _postData = {
+        name: this.form.name,
+        password: md5(this.form.password)
+      }
+      axios.post('/v2ray/loginManager', _postData).then(res => {
         if (res.success && res.token) {
           localStorage.setItem('user', res.token)
           this.$router.push({
             name: 'manager'
           })
         } else {
+          this.loading = false;
           alert(res.msg)
         }
       })

@@ -48,8 +48,8 @@
         </div>
         <div class="form-group text-right">
           <div class="btn-group " role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-secondary btn-sm" @click="resetForm">reset</button>
-            <button type="button" class="btn btn-success btn-sm" @click="submitForm">submit</button>
+            <button type="button" class="btn btn-secondary" @click="resetForm">reset</button>
+            <button type="button" class="btn btn-primary" @click="submitForm">submit</button>
           </div>
         </div>
       </form>
@@ -71,41 +71,52 @@
     </div>
     <ul class="list-group list-group-flush">
       <li class="text-center cntr-p" v-if="loadingList">Loading...</li>
-      <li class="text-center cntr-p" v-if="!loadingList && listData.length <= 0">NoData</li>
+      <li class="text-center cntr-p" v-if="!loadingList && listData.length <= 0">没有相关数据</li>
       <li class="list-group-item" v-for="(item, index) in listData" :key="index">
-        <div class="list-title cntr-mb">
-          <span v-if="!item.needUpdate">Email: {{item.email}} [{{item.remark}}]</span>
+        <div class="list-title cntr-flex justify-between aligni-center cntr-mb">
+          <span class="cntr-grid cntr-gaf-column aligni-center cntr-gg-xsm" v-if="!item.needUpdate">
+            Email: {{item.email}} [{{item.remark}}]
+            <span class="price-bage">
+              <svg class="icom icom-coin-yen" viewBox="0 0 32 32">
+                <path d="M15 2c-8.284 0-15 6.716-15 15s6.716 15 15 15c8.284 0 15-6.716 15-15s-6.716-15-15-15zM15 29c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12z"></path>
+                <path d="M19 18c0.552 0 1-0.448 1-1s-0.448-1-1-1h-2.131l2.963-4.445c0.306-0.46 0.182-1.080-0.277-1.387s-1.080-0.182-1.387 0.277l-3.168 4.752-3.168-4.752c-0.306-0.46-0.927-0.584-1.387-0.277s-0.584 0.927-0.277 1.387l2.964 4.445h-2.132c-0.552 0-1 0.448-1 1s0.448 1 1 1h3v2h-3c-0.552 0-1 0.448-1 1s0.448 1 1 1h3v3c0 0.552 0.448 1 1 1s1-0.448 1-1v-3h3c0.552 0 1-0.448 1-1s-0.448-1-1-1h-3v-2h3z"></path>
+              </svg>{{item.price}}
+            </span>
+          </span>
           <template v-else>
-            <div>Email: <input class="form-control inline-form-control" v-model="item.email" /></div>
-            <div>Remark: <input class="form-control inline-form-control" v-model="item.remark" /></div>
+            <div class="cntr-flex justify-between">
+              <div>Email: <input class="form-control form-control-sm" v-model="item.email" /></div>
+              <div>Price: <input type="number" step="0.01" class="form-control form-control-sm" v-model="item.price"/></div>
+            </div>
+            <div>Remark: <input class="form-control form-control-sm" v-model="item.remark" /></div>
           </template>
           <span class="badge badge-dark" v-if="calcOverDue(item) && !item.needUpdate">overdue</span>
         </div>
         <!-- <div>Port: {{item.port}}</div> -->
         <div class="cntr-mb" v-if="!item.needUpdate">uuid: {{item.uuid}}</div>
-        <div class="cntr-mb uuid-modify" v-else><span>uuid: </span><input class="form-control inline-form-control full-width" v-model="item.uuid" /></div>
+        <div class="cntr-mb uuid-modify" v-else><span>uuid: </span><input class="form-control form-control-sm inline-form-control full-width" v-model="item.uuid" /></div>
         <div class="list-info">
           <span>上行：{{formatSize(item.up)}}</span>
           <span>下行：{{formatSize(item.down)}}</span>
           <span>total：{{formatSize(item.up+item.down)}}</span>
-          <button type="button" class="btn btn-info btn-sm" @click="resetBandWidth($event, item)">reset</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="resetBandWidth($event, item, index)">reset</button>
         </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
-          <input type="date" class="form-control inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
-          <input type="number" class="form-control inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="1"/>
+          <input type="date" class="form-control form-control-sm inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
+          <input type="number" class="form-control form-control-sm inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="1"/>
         </div>
         <div class="addon-btns">
           <div class="btn-group" role="group" aria-label="Basic example" >
-            <button type="button" class="btn btn-info btn-sm" @click="changeOffDate($event, item, index)">change date</button>
-            <button type="button" class="btn btn-warning btn-sm" :disabled="item.noChanged" @click="resetOffDate($event, item, index)">reset date</button>
+            <button type="button" class="btn btn-primary btn-sm" @click="changeOffDate($event, item, index)">change date</button>
+            <button type="button" class="btn btn-secondary btn-sm" :disabled="item.noChanged" @click="resetOffDate($event, item, index)">reset date</button>
           </div>
           <div class="btn-group" role="group" aria-label="Basic example" v-if="!item.needUpdate">
             <button type="button" class="btn btn-secondary btn-sm"  @click="changeNeedUpdate($event, item, index)">modify</button>
             <button type="button" class="btn btn-danger btn-sm"  @click="deleteAction($event, item, index)">delete</button>
           </div>
           <div class="btn-group" role="group" aria-label="Basic example" v-else>
-            <button type="button" class="btn btn-success btn-sm"  @click="updateClient($event, item, index)">update</button>
+            <button type="button" class="btn btn-primary btn-sm"  @click="updateClient($event, item, index)">update</button>
             <button type="button" class="btn btn-danger btn-sm" @click="cancelUpdate($event, item, index)">cancel</button>
           </div>
         </div>
@@ -176,7 +187,7 @@ export default {
       this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].offDate).format('yyyy-MM-dd'))
       this.$set(this.listData[index], 'noChanged', true)
     },
-    resetBandWidth($event, item, index) {
+    resetBandWidth($event, item) {
       axios.post('/v2ray/resetBandWidth', item).then(res => {
         alert(res.msg)
         this.getList()
@@ -209,7 +220,7 @@ export default {
       this.filterContent = ''
       this.listData = cloneDeep(this.listDataOrigin);
     },
-    deleteAction($event, item, index) {
+    deleteAction($event, item) {
       const _confirm = confirm('删除账号?')
       if (_confirm) {
         axios.post('/v2ray/deleteClient', {id:item.id}).then(res => {
@@ -277,8 +288,6 @@ export default {
         alert('uuid not avaliable')
         return;
       }
-      console.log(this.form)
-      return;
       axios.post('/v2ray/addClient', this.form).then(res => {
         alert(res.msg)
         if (res.success) {
@@ -354,10 +363,10 @@ export default {
   grid-gap: 0 1rem;
 }
 .list-title {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  /* display: grid;
+  grid-template-columns: 1fr auto auto;
   grid-gap: 0 1rem;
-  align-items: center;
+  align-items: center; */
 }
 .list-info {
   display: grid;
@@ -365,5 +374,17 @@ export default {
   grid-gap: 0 1rem;
   align-items: center;
   margin-bottom: 1rem;
+}
+
+.price-bage {
+  display: inline-grid;
+  align-items: center;
+  grid-gap: .2rem;
+  background-color: #ffc107;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 0 .5rem;
+  font-size: 1.2rem;
 }
 </style>
