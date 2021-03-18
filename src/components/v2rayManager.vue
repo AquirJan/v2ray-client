@@ -58,7 +58,7 @@
     <div class="cntr-mb search-wrap">
       <h3>search list</h3>
       <div class="search-content cntr-mb">
-        <input type="text" style="height: auto;" class="form-control inline-form-control" v-model="filterContent" @keydown.enter="filterAction"/>
+        <input type="text" style="height: auto;" class="form-control inline-form-control" v-model="filterContent" />
         <div class="btn-group " role="group" aria-label="Basic example">
           <button type="button" class="btn btn-secondary btn-sm" @click="resetAction">reset</button>
           <button type="button" class="btn btn-primary btn-sm" @click="filterAction">search</button>
@@ -151,6 +151,19 @@ export default {
       listDataOrigin: []
     }
   },
+  computed: {
+    calcListData() {
+      if (this.filterContent) {
+        const _reg = new RegExp(this.filterContent, 'gi')
+        const _list = this.listData.filter(val => {
+          return val.email.match(_reg) || val.remark.match(_reg)
+        })
+        return _list
+      } else {
+        return this.listData
+      }
+    }
+  },
   methods: {
     renewMonth(offDate, mth){
       const _dateObj = new Date(offDate)
@@ -218,7 +231,7 @@ export default {
     },
     resetAction(){
       this.filterContent = ''
-      this.listData = cloneDeep(this.listDataOrigin);
+      // this.listData = cloneDeep(this.listDataOrigin);
     },
     deleteAction($event, item) {
       const _confirm = confirm('删除账号?')
@@ -237,16 +250,16 @@ export default {
         return false;
       }
     },
-    filterAction() {
-      if (!this.filterContent) {
-        this.listData = cloneDeep(this.listDataOrigin);
-      } else {
-        const _reg = new RegExp(this.filterContent, 'gi')
-        this.listData = this.listData.filter(val => {
-          return val.email.match(_reg) || val.remark.match(_reg)
-        })
-      }
-    },
+    // filterAction() {
+    //   if (!this.filterContent) {
+    //     this.listData = cloneDeep(this.listDataOrigin);
+    //   } else {
+    //     const _reg = new RegExp(this.filterContent, 'gi')
+    //     this.listData = this.listData.filter(val => {
+    //       return val.email.match(_reg) || val.remark.match(_reg)
+    //     })
+    //   }
+    // },
     restartService() {
       axios.post('/v2ray/restartService').then(res => {
         this.getList()

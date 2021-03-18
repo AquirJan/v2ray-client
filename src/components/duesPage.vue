@@ -23,11 +23,12 @@
         <a :href="`${publicPath}clients/app-universal-release.apk`" class="stretched-link block-link" download="app-universal-release.apk">android</a>
       </li>
       <li class="list-group-item">
-        <a :href="`${publicPath}clients/vn-complete.zip`" class="stretched-link block-link" download="vn-complete.zip">windows</a>
-        <a :href="`${publicPath}tutorials/windows.docx`" class="stretched-link block-link" download="windows-tutorial.docx">教程.docx</a>
+        <a :href="`${publicPath}clients/vn-complete.zip`" download="vn-complete.zip">windows</a>
+        <a :href="`${publicPath}tutorials/windows.docx`" download="windows-tutorial.docx">教程.docx</a>
       </li>
       <li class="list-group-item">
-        <a :href="`${publicPath}clients/V2rayU.dmg`" download="V2rayU.dmg">mac os</a><a href="https://www.jianshu.com/p/d2558583872b">安装教程</a>
+        <a :href="`${publicPath}clients/V2rayU.dmg`" download="V2rayU.dmg">mac os</a>
+        <a href="https://www.jianshu.com/p/d2558583872b">安装教程</a>
       </li>
       <li class="list-group-item">
         ios 可以自行搜索 shadowrocket (美区)
