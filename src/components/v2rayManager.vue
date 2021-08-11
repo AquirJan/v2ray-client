@@ -35,7 +35,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text" >offDate</span>
             </div>
-            <input type="date" class="form-control" v-model="form.offDate"/>
+            <input type="datetime" class="form-control" v-model="form.off_date"/>
           </div>
         </div>
         <div class="form-group">
@@ -103,7 +103,7 @@
         </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
-          <input type="date" class="form-control form-control-sm inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
+          <input type="datetime" class="form-control form-control-sm inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
           <input type="number" class="form-control form-control-sm inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="1"/>
         </div>
         <div class="addon-btns">
@@ -122,12 +122,13 @@
         </div>
       </li>
     </ul>
+    <dialog id="favDialog">abdf</dialog>
   </div>
 </template>
 
 <script>
 import cloneDeep from '../assets/lodash.clonedeep.js'
-// import dialogPop from './dialog.js'
+import ajDialog from './dialog.js'
 const uuidv1 = require('uuid/v1');
 import axios from 'axios'
 export default {
@@ -139,7 +140,7 @@ export default {
       oneDay: 86400000, 
       form: {
         email: '',
-        offDate: '',
+        off_date: new Date().format('yyyy/MM/dd hh:mm:ss'),
         uuid: '',
         port: 443,
         remark: '',
@@ -197,12 +198,12 @@ export default {
     },
     resetOffDate($event, item, index) {
       this.$set(this.listData[index], 'offDate', this.listDataOrigin[index].offDate)
-      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].offDate).format('yyyy-MM-dd'))
+      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].offDate).format('yyyy-MM-dd hh:mm:ss'))
       this.$set(this.listData[index], 'noChanged', true)
     },
     resetBandWidth($event, item) {
-      axios.post('/v2ray/resetBandWidth', item).then(res => {
-        alert(res.msg)
+      axios.post('/xray/resetBandWidth', item).then(res => {
+        alert(res.message)
         this.getList()
       })
     },
@@ -236,9 +237,9 @@ export default {
     deleteAction($event, item) {
       const _confirm = confirm('删除账号?')
       if (_confirm) {
-        axios.post('/v2ray/deleteClient', {id:item.id}).then(res => {
+        axios.post('/xray/deleteClient', {id:item.id}).then(res => {
           this.getList()
-          alert(res.msg)
+          alert(res.message)
         })
       }
     },
@@ -250,25 +251,25 @@ export default {
         return false;
       }
     },
-    // filterAction() {
-    //   if (!this.filterContent) {
-    //     this.listData = cloneDeep(this.listDataOrigin);
-    //   } else {
-    //     const _reg = new RegExp(this.filterContent, 'gi')
-    //     this.listData = this.listData.filter(val => {
-    //       return val.email.match(_reg) || val.remark.match(_reg)
-    //     })
-    //   }
-    // },
+    filterAction() {
+      if (!this.filterContent) {
+        this.listData = cloneDeep(this.listDataOrigin);
+      } else {
+        const _reg = new RegExp(this.filterContent, 'gi')
+        this.listData = this.listData.filter(val => {
+          return val.email.match(_reg) || val.remark.match(_reg)
+        })
+      }
+    },
     restartService() {
-      axios.post('/v2ray/restartService').then(res => {
+      axios.post('/xray/restartService').then(res => {
         this.getList()
-        alert(res.msg)
+        alert(res.message)
       })
     },
     changeOffDate($event, item) {
-      axios.post('/v2ray/changeOffDate', item).then(res => {
-        alert(res.msg)
+      axios.post('/xray/changeOffDate', item).then(res => {
+        alert(res.message)
         this.getList()
       })
     },
@@ -278,8 +279,8 @@ export default {
       this.$set(this,'listData', _listData)
     },
     updateClient($event, item) {
-      axios.post('/v2ray/updateClient', item).then(res => {
-        alert(res.msg)
+      axios.post('/xray/updateClient', item).then(res => {
+        alert(res.message)
         this.getList()
       })
     },
@@ -287,8 +288,8 @@ export default {
       this.form.uuid = uuidv1()
     },
     updateDataTrafficAction(){
-      axios.post('/v2ray/updateDataTraffic').then(res => {
-        alert(res.msg)
+      axios.post('/xray/updateDataTraffic').then(res => {
+        alert(res.message)
         this.getList()
       })
     },
@@ -301,8 +302,8 @@ export default {
         alert('uuid not avaliable')
         return;
       }
-      axios.post('/v2ray/addClient', this.form).then(res => {
-        alert(res.msg)
+      axios.post('/xray/addClient', this.form).then(res => {
+        alert(res.message)
         if (res.success) {
           this.getList();
           this.resetForm()
@@ -315,19 +316,21 @@ export default {
         email: '',
         port: 443,
         price: 15.00,
-        offDate: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy-MM-dd')
+        off_date: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy-MM-dd hh:mm:ss')
       });
     },
     getList() {
       this.loadingList = true;
       this.listData = []
-      axios.post('/v2ray/list').then(res => {
+      axios.post('/xray/listClients').then(res => {
         this.loadingList = false;
         this.listData = []
+        const {success, data} = res;
+        console.log(res)
         if (res.success && res.data) {
           this.listData = res.data;
           this.listData.forEach((val) => {
-            val['offDateFormat'] = new Date(val.offDate).format('yyyy-MM-dd')
+            val['offDateFormat'] = new Date(val.off_date).format('yyyy-MM-dd hh:mm:ss')
             val['needUpdate'] = false;
             val['noChanged'] = true;
           })
@@ -339,6 +342,18 @@ export default {
   mounted() {
     this.getList();
     this.resetForm()
+    const favDialog = document.createElement('dialog')
+    document.body.appendChild(favDialog)
+    setTimeout(()=>{
+      // var favDialog = document.getElementById('favDialog');
+      
+      
+      if (typeof favDialog.showModal === "function") {
+        favDialog.showModal();
+      } else {
+        alert("The <dialog> API is not supported by this browser");
+      }
+    }, 1000)
   }
 }
 </script>

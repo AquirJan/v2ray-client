@@ -58,7 +58,7 @@ export default {
         name: this.form.name,
         password: md5(this.form.password)
       }
-      axios.post('/v2ray/loginManager', _postData).then(res => {
+      axios.post('/xray/login', _postData).then(res => {
         if (res.success && res.token) {
           localStorage.setItem('user', res.token)
           this.$router.push({

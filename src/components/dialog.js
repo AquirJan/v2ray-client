@@ -1,10 +1,10 @@
-export default class dialogPop {
+export default class ajDialog {
     constructor(options) {
         this.opt = Object.assign({
             id: `dialog_${new Date().getTime()}`
         }, options);
-        this.pop = null;
-        this.popWrap = null;
+        this.pop = undefined;
+        this.popWrap = undefined;
         this.init()
     }
     init() {
@@ -17,7 +17,6 @@ export default class dialogPop {
         //     left: 0;
         // `
         document.body.appendChild(this.pop)
-        this.pop.showModal()
-        return this;
+        return this.pop;
     }
 }

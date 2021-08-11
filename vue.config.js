@@ -12,8 +12,8 @@ module.exports = {
     open: true,
     // host: 'localhost',
     proxy: {
-      '/v2ray': {
-        target: 'http://localhost:3030', // dev
+      '/xray': {
+        target: 'http://localhost:8686', // dev
         // target: 'http://www.samojum.ml:3030', // produt
         logLevel: 'debug',
         changeOrigin: true
