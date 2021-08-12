@@ -66,7 +66,7 @@
       </div>
       <div class="cntr-flex justify-between">
         <button type="button" class="btn btn-dark btn-sm" @click="restartService">restart service</button>
-        <button type="button" class="btn btn-primary btn-sm" @click="updateDataTrafficAction">update traffic</button>
+        <button type="button" class="btn btn-primary btn-sm" @click="updateTrafficAction">update traffic</button>
       </div>
     </div>
     <ul class="list-group list-group-flush">
@@ -99,7 +99,7 @@
           <span>上行：{{formatSize(item.up)}}</span>
           <span>下行：{{formatSize(item.down)}}</span>
           <span>total：{{formatSize(item.up+item.down)}}</span>
-          <button type="button" class="btn btn-primary btn-sm" @click="resetBandWidth($event, item, index)">reset</button>
+          <button type="button" class="btn btn-primary btn-sm" @click="resetTraffic($event, item, index)">reset</button>
         </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
@@ -128,7 +128,7 @@
 
 <script>
 import cloneDeep from '../assets/lodash.clonedeep.js'
-import ajDialog from './dialog.js'
+import samoDialog from './dialog.js'
 const uuidv1 = require('uuid/v1');
 import axios from 'axios'
 export default {
@@ -138,6 +138,7 @@ export default {
   data() {
     return {
       oneDay: 86400000, 
+      dialogIns: undefined,
       form: {
         email: '',
         off_date: new Date().format('yyyy/MM/dd hh:mm:ss'),
@@ -201,9 +202,12 @@ export default {
       this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].offDate).format('yyyy-MM-dd hh:mm:ss'))
       this.$set(this.listData[index], 'noChanged', true)
     },
-    resetBandWidth($event, item) {
-      axios.post('/xray/resetBandWidth', item).then(res => {
-        alert(res.message)
+    resetTraffic($event, item) {
+      this.dialogIns = new samoDialog({
+        content: 'reseting...'
+      })
+      axios.post('/xray/resetTraffic', item).then(res => {
+        this.dialogIns.setContent(res.message)
         this.getList()
       })
     },
@@ -238,8 +242,10 @@ export default {
       const _confirm = confirm('删除账号?')
       if (_confirm) {
         axios.post('/xray/deleteClient', {id:item.id}).then(res => {
+          this.dialogIns = new samoDialog({
+            content: res.message
+          })
           this.getList()
-          alert(res.message)
         })
       }
     },
@@ -262,14 +268,20 @@ export default {
       }
     },
     restartService() {
+      this.dialogIns = new samoDialog({
+        content: 'restarting...'
+      })
       axios.post('/xray/restartService').then(res => {
+        this.dialogIns.setContent(res.message)
         this.getList()
-        alert(res.message)
       })
     },
     changeOffDate($event, item) {
+      this.dialogIns = new samoDialog({
+        content: 'changing...'
+      })
       axios.post('/xray/changeOffDate', item).then(res => {
-        alert(res.message)
+        this.dialogIns.setContent(res.message)
         this.getList()
       })
     },
@@ -279,31 +291,54 @@ export default {
       this.$set(this,'listData', _listData)
     },
     updateClient($event, item) {
-      axios.post('/xray/updateClient', item).then(res => {
-        alert(res.message)
+      this.dialogIns = new samoDialog({
+        content: 'updating...'
+      })
+      let _params = {
+        ...item
+      }
+      _params['off_date'] = new Date(_params.off_date).format('yyyy/MM/dd hh:mm:ss')
+      
+      axios.post('/xray/updateClient', _params).then(res => {
+        const {success, message} = res;
+        this.dialogIns.setContent(message)
+        this.dialogIns.setDialogStyle({
+          'background-color': success ? '#efefef' : '#F56C6C',
+          'color': success ? '#333' : '#fff',
+        })
         this.getList()
       })
     },
     generateUUID() {
       this.form.uuid = uuidv1()
     },
-    updateDataTrafficAction(){
-      axios.post('/xray/updateDataTraffic').then(res => {
-        alert(res.message)
+    updateTrafficAction(){
+      this.dialogIns = new samoDialog({
+        content: 'updating...'
+      })
+      axios.post('/xray/updateTraffic').then(res => {
+        this.dialogIns.setContent(res.message)
         this.getList()
       })
     },
     submitForm() {
       if (!this.form.email) {
-        alert('email not avaliable')
+        this.dialogIns = new samoDialog({
+          content: 'email not avaliable'
+        })
         return;
       }
       if (!this.form.uuid) {
-        alert('uuid not avaliable')
+        this.dialogIns = new samoDialog({
+          content: 'uuid not avaliable'
+        })
         return;
       }
+      this.dialogIns = new samoDialog({
+        content: 'loading...'
+      })
       axios.post('/xray/addClient', this.form).then(res => {
-        alert(res.message)
+        this.dialogIns.setContent(res.message)
         if (res.success) {
           this.getList();
           this.resetForm()
@@ -316,7 +351,7 @@ export default {
         email: '',
         port: 443,
         price: 15.00,
-        off_date: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy-MM-dd hh:mm:ss')
+        off_date: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy/MM/dd hh:mm:ss')
       });
     },
     getList() {
@@ -326,9 +361,8 @@ export default {
         this.loadingList = false;
         this.listData = []
         const {success, data} = res;
-        console.log(res)
-        if (res.success && res.data) {
-          this.listData = res.data;
+        if (success && data) {
+          this.listData = data;
           this.listData.forEach((val) => {
             val['offDateFormat'] = new Date(val.off_date).format('yyyy-MM-dd hh:mm:ss')
             val['needUpdate'] = false;
@@ -342,18 +376,6 @@ export default {
   mounted() {
     this.getList();
     this.resetForm()
-    const favDialog = document.createElement('dialog')
-    document.body.appendChild(favDialog)
-    setTimeout(()=>{
-      // var favDialog = document.getElementById('favDialog');
-      
-      
-      if (typeof favDialog.showModal === "function") {
-        favDialog.showModal();
-      } else {
-        alert("The <dialog> API is not supported by this browser");
-      }
-    }, 1000)
   }
 }
 </script>
