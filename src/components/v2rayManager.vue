@@ -1,7 +1,7 @@
 <template>
   <div >
     <div class="container">
-    <h2>v2ray manager</h2>
+    <h2>xray manager</h2>
       <form >
         <div class="form-group">
           <div class="input-group mb-3">
@@ -192,7 +192,7 @@ export default {
     },
     changeOffDateFromDate($event, item, index) {
       const _value = $event.target.value;
-      const _newOffDate = _value+' 00:00:00'
+      const _newOffDate = _value
       
       this.$set(this.listData[index], 'offDate', _newOffDate)
       this.$set(this.listData[index], 'noChanged', false)
@@ -236,6 +236,7 @@ export default {
     },
     resetAction(){
       this.filterContent = ''
+      this.getList()
       // this.listData = cloneDeep(this.listDataOrigin);
     },
     deleteAction($event, item) {
@@ -258,14 +259,20 @@ export default {
       }
     },
     filterAction() {
-      if (!this.filterContent) {
-        this.listData = cloneDeep(this.listDataOrigin);
-      } else {
-        const _reg = new RegExp(this.filterContent, 'gi')
-        this.listData = this.listData.filter(val => {
-          return val.email.match(_reg) || val.remark.match(_reg)
-        })
-      }
+      this.getList({
+        conditions: {
+          email: this.filterContent,
+          remark: this.filterContent
+        }
+      })
+      // if (!this.filterContent) {
+      //   this.listData = cloneDeep(this.listDataOrigin);
+      // } else {
+      //   const _reg = new RegExp(this.filterContent, 'gi')
+      //   this.listData = this.listData.filter(val => {
+      //     return val.email.match(_reg) || val.remark.match(_reg)
+      //   })
+      // }
     },
     restartService() {
       this.dialogIns = new samoDialog({
@@ -277,13 +284,7 @@ export default {
       })
     },
     changeOffDate($event, item) {
-      this.dialogIns = new samoDialog({
-        content: 'changing...'
-      })
-      axios.post('/xray/changeOffDate', item).then(res => {
-        this.dialogIns.setContent(res.message)
-        this.getList()
-      })
+      this.updateClient($event, item)
     },
     changeNeedUpdate($event, item, index) {
       let _listData = cloneDeep(this.listData);
@@ -297,7 +298,7 @@ export default {
       let _params = {
         ...item
       }
-      _params['off_date'] = new Date(_params.off_date).format('yyyy/MM/dd hh:mm:ss')
+      _params['off_date'] = new Date(_params.offDateFormat).format('yyyy/MM/dd hh:mm:ss')
       
       axios.post('/xray/updateClient', _params).then(res => {
         const {success, message} = res;
@@ -354,10 +355,10 @@ export default {
         off_date: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy/MM/dd hh:mm:ss')
       });
     },
-    getList() {
+    getList(params={}) {
       this.loadingList = true;
       this.listData = []
-      axios.post('/xray/listClients').then(res => {
+      axios.post('/xray/listClients', params).then(res => {
         this.loadingList = false;
         this.listData = []
         const {success, data} = res;
