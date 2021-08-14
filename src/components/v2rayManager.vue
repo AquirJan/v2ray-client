@@ -103,7 +103,7 @@
         </div>
         <div class="change-date-wrap">
           <span>Off Date :</span>
-          <input type="datetime" class="form-control form-control-sm inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
+          <input type="datetime" placeholder="yyyy/MM/dd hh:mm:ss" class="form-control form-control-sm inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
           <input type="number" class="form-control form-control-sm inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="1"/>
         </div>
         <div class="addon-btns">
@@ -122,7 +122,6 @@
         </div>
       </li>
     </ul>
-    <dialog id="favDialog">abdf</dialog>
   </div>
 </template>
 
@@ -168,38 +167,20 @@ export default {
   },
   methods: {
     renewMonth(offDate, mth){
-      const _dateObj = new Date(offDate)
-      let _year = _dateObj.getFullYear();
-      let _month = Number(_dateObj.getMonth()+1)
-      let _day = _dateObj.getDate();
-      const renew = mth
-      let _tmpSumMonths = Number(renew)+Number(_month);
-      let _plusYears = Math.floor(_tmpSumMonths/12);
-      if (_month === 12 && _tmpSumMonths >= 24) {
-        _plusYears = _plusYears - 1;
-      }
-      if (_tmpSumMonths === 12) {
-        _plusYears = 0
-      }
-      let _newMonth = _tmpSumMonths%12;
-      _newMonth = _newMonth === 0 ? 12 : _newMonth;
-      let _newYear = _year+_plusYears
-      const newMonthDays = new Date(_newYear, _newMonth, 0).getDate();
-      const _newDay = (_day - newMonthDays) >= 0 ? newMonthDays : _day;
-      _newMonth = _newMonth === 0 ? 12 : _newMonth;
-      const _finalDate = new Date(`${_newYear}-${_newMonth}-${_newDay}`)
-      return _finalDate.format('yyyy-MM-dd')
+      let _od = new Date(offDate)
+      let _off_date = new Date(_od.setMonth(_od.getMonth()+Number(mth)))
+      return _off_date
     },
     changeOffDateFromDate($event, item, index) {
       const _value = $event.target.value;
       const _newOffDate = _value
       
-      this.$set(this.listData[index], 'offDate', _newOffDate)
+      this.$set(this.listData[index], 'off_date', _newOffDate)
       this.$set(this.listData[index], 'noChanged', false)
     },
     resetOffDate($event, item, index) {
-      this.$set(this.listData[index], 'offDate', this.listDataOrigin[index].offDate)
-      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].offDate).format('yyyy-MM-dd hh:mm:ss'))
+      this.$set(this.listData[index], 'off_date', this.listDataOrigin[index].off_date)
+      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].off_date).format('yyyy-MM-dd hh:mm:ss'))
       this.$set(this.listData[index], 'noChanged', true)
     },
     resetTraffic($event, item) {
@@ -221,11 +202,11 @@ export default {
     },
     addMonth($event, item, index) {
       const _value = $event.target.value;
-      let _offDate = item.offDate
-      const _newOffDate = this.renewMonth(_offDate, _value);
-
+      let _off_date = item.off_date
+      let _newOffDate = this.renewMonth(_off_date, _value);
+      _newOffDate = new Date(_newOffDate).format('yyyy/MM/dd hh:mm:ss')
       this.$set(this.listData[index], 'offDateFormat', _newOffDate)
-      this.$set(this.listData[index], 'offDate', _newOffDate+' 00:00:00')
+      this.$set(this.listData[index], 'off_date', _newOffDate)
       this.$set(this.listData[index], 'noChanged', false)
     },
     cancelUpdate($event, item, index) {
@@ -237,7 +218,6 @@ export default {
     resetAction(){
       this.filterContent = ''
       this.getList()
-      // this.listData = cloneDeep(this.listDataOrigin);
     },
     deleteAction($event, item) {
       const _confirm = confirm('删除账号?')
@@ -252,7 +232,7 @@ export default {
     },
     calcOverDue(item) {
       // console.log(item)
-      if (new Date().getTime() > new Date(item.offDate).getTime()) {
+      if (new Date().getTime() > new Date(item.off_date).getTime()) {
         return true;
       } else {
         return false;
@@ -298,7 +278,8 @@ export default {
       let _params = {
         ...item
       }
-      _params['off_date'] = new Date(_params.offDateFormat).format('yyyy/MM/dd hh:mm:ss')
+      this.dialogIns.setContent(_params.offDateFormat)
+      _params['off_date'] = _params.offDateFormat
       
       axios.post('/xray/updateClient', _params).then(res => {
         const {success, message} = res;

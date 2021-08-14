@@ -38,8 +38,11 @@ export default class samoDialog {
             background-color: rgba(0, 0, 0, .1);
             z-index: 10;
         `
-        this.dialogWrap.addEventListener('click', ()=>{
+        this.dialogWrap.addEventListener('click', (e)=>{
             document.body.removeChild(this.dialogWrap)
+        })
+        this.dialog.addEventListener('click', (e)=>{
+            e.stopPropagation()
         })
         this.dialogWrap.appendChild(this.dialog)
         document.body.appendChild(this.dialogWrap)

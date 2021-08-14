@@ -67,14 +67,13 @@ export default {
         content: '登录中。。。'
       })
       axios.post('/xray/login', _postData).then(res => {
+        dialogIns.setContent(res.message)
+        this.loading = false;
         if (res.success && res.token) {
           localStorage.setItem('user', res.token)
           this.$router.push({
             name: 'manager'
           })
-        } else {
-          this.loading = false;
-          dialogIns.setContent(res.message)
         }
       })
     }
