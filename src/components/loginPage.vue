@@ -34,6 +34,7 @@
 <script>
 import axios from 'axios'
 import * as md5 from 'md5'
+import samoDialog from './dialog.js'
 export default {
   name: 'loginPage',
   data() {
@@ -48,16 +49,23 @@ export default {
   methods: {
     loginAction() {
       if (!this.form.name) {
-        return alert('fill name')
+        return new samoDialog({
+          content: '请输入账号'
+        })
       }
       if (!this.form.password) {
-        return alert('fill password')
+        return new samoDialog({
+          content: '请填写密码'
+        })
       }
       this.loading = true;
       const _postData = {
         name: this.form.name,
         password: md5(this.form.password)
       }
+      const dialogIns = new samoDialog({
+        content: '登录中。。。'
+      })
       axios.post('/xray/login', _postData).then(res => {
         if (res.success && res.token) {
           localStorage.setItem('user', res.token)
@@ -66,7 +74,7 @@ export default {
           })
         } else {
           this.loading = false;
-          alert(res.msg)
+          dialogIns.setContent(res.message)
         }
       })
     }

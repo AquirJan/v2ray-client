@@ -7,6 +7,7 @@ module.exports = {
       },
     },
   },
+  publicPath: process.env.NODE_ENV === 'production' ? '/xrayweb' : '/',
   devServer: {
     // port: '8081',
     open: true,
