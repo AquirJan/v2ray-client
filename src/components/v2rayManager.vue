@@ -283,9 +283,8 @@ export default {
       let _params = {
         ...item
       }
-      this.dialogIns.setContent(_params.offDateFormat)
+      // this.dialogIns.setContent(_params.offDateFormat)
       _params['off_date'] = _params.offDateFormat
-      
       axios.post('/xray/updateClient', _params).then(res => {
         const {success, message} = res;
         this.dialogIns.setContent(message)
