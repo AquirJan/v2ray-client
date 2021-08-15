@@ -106,6 +106,11 @@
           <input type="datetime" placeholder="yyyy/MM/dd hh:mm:ss" class="form-control form-control-sm inline-form-control" v-model="item.offDateFormat" @change="changeOffDateFromDate($event, item, index)"/>
           <input type="number" class="form-control form-control-sm inline-form-control" @blur="addMonth($event, item, index)" value="0" min=0 max=99 maxlength="1"/>
         </div>
+        <div class="change-date-wrap">
+          <span>Traffic :</span>
+          <span v-if="item.needUpdate"><input  type="number" class="form-control form-control-sm inline-form-control" v-model="item.traffic" value="0" min=0 max=99 maxlength="1"/>GB</span>
+          <span v-else>{{item.traffic}} GB</span>
+        </div>
         <div class="addon-btns">
           <div class="btn-group" role="group" aria-label="Basic example" >
             <button type="button" class="btn btn-primary btn-sm" @click="changeOffDate($event, item, index)">change date</button>
