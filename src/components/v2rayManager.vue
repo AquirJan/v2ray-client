@@ -147,7 +147,6 @@ export default {
   },
   data() {
     return {
-      oneDay: 86400000, 
       dialogIns: undefined,
       form: {},
       filterContent: '',
