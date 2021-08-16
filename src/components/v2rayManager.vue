@@ -141,15 +141,6 @@ import cloneDeep from '../assets/lodash.clonedeep.js'
 import samoDialog from './dialog.js'
 const uuidv1 = require('uuid/v1');
 import axios from 'axios'
-const _defaultFormData = {
-  traffic: 20,
-  uuid: '',
-  email: '',
-  port: 443,
-  price: 15.00,
-  remark: '',
-  off_date: (new Date(new Date().setDate(new Date().getDate()+1)).format('yyyy/MM/dd hh:mm:ss')),
-}
 export default {
   name: 'v2rayManager',
   components: {
@@ -158,10 +149,19 @@ export default {
     return {
       oneDay: 86400000, 
       dialogIns: undefined,
-      form: cloneDeep(_defaultFormData),
+      form: {},
       filterContent: '',
       loadingList: false,
       listData: [],
+      defaultFormData: {
+        traffic: 20,
+        uuid: '',
+        email: '',
+        port: 443,
+        price: 15.00,
+        remark: '',
+        off_date: (new Date(new Date().setDate(new Date().getDate()+1)).format('yyyy/MM/dd hh:mm:ss')),
+      },
       listDataOrigin: []
     }
   },
@@ -235,10 +235,11 @@ export default {
     deleteAction($event, item) {
       const _confirm = confirm('删除账号?')
       if (_confirm) {
-        axios.post('/xray/deleteClient', {id:item.id}).then(res => {
-          this.dialogIns = new samoDialog({
-            content: res.message
-          })
+        this.dialogIns = new samoDialog({
+          content: 'deleting...'
+        })
+        axios.post('/xray/deleteClient', item).then(res => {
+          this.dialogIns.setContent(res.message)
           this.getList()
         })
       }
@@ -340,7 +341,7 @@ export default {
       })
     },
     resetForm() {
-      this.$set(this, 'form', cloneDeep(_defaultFormData));
+      this.$set(this, 'form', cloneDeep(this.defaultFormData));
     },
     getList(params={}) {
       this.loadingList = true;
@@ -363,6 +364,7 @@ export default {
   },
   mounted() {
     this.getList();
+    this.resetForm()
   }
 }
 </script>
