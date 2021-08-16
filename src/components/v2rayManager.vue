@@ -38,12 +38,18 @@
             <input type="datetime" class="form-control" v-model="form.off_date"/>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group dis-grid grid-2-cols grid-gap-small">
           <div class="input-group mb-3">
             <div class="input-group-prepend">
               <span class="input-group-text" >price</span>
             </div>
             <input type="number" step="0.01" class="form-control" v-model="form.price"/>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >traffic</span>
+            </div>
+            <input type="number" step="1" class="form-control" v-model="form.traffic"/>
           </div>
         </div>
         <div class="form-group text-right">
@@ -135,6 +141,15 @@ import cloneDeep from '../assets/lodash.clonedeep.js'
 import samoDialog from './dialog.js'
 const uuidv1 = require('uuid/v1');
 import axios from 'axios'
+const _defaultFormData = {
+  traffic: 20,
+  uuid: '',
+  email: '',
+  port: 443,
+  price: 15.00,
+  remark: '',
+  off_date: (new Date(new Date().setDate(new Date().getDate()+1)).format('yyyy/MM/dd hh:mm:ss')),
+}
 export default {
   name: 'v2rayManager',
   components: {
@@ -143,14 +158,7 @@ export default {
     return {
       oneDay: 86400000, 
       dialogIns: undefined,
-      form: {
-        email: '',
-        off_date: new Date().format('yyyy/MM/dd hh:mm:ss'),
-        uuid: '',
-        port: 443,
-        remark: '',
-        price: 15.00
-      },
+      form: cloneDeep(_defaultFormData),
       filterContent: '',
       loadingList: false,
       listData: [],
@@ -332,13 +340,7 @@ export default {
       })
     },
     resetForm() {
-      this.$set(this, 'form', {
-        uuid: '',
-        email: '',
-        port: 443,
-        price: 15.00,
-        off_date: (new Date((new Date()).getTime() + this.oneDay)).format('yyyy/MM/dd hh:mm:ss')
-      });
+      this.$set(this, 'form', cloneDeep(_defaultFormData));
     },
     getList(params={}) {
       this.loadingList = true;
@@ -361,7 +363,6 @@ export default {
   },
   mounted() {
     this.getList();
-    this.resetForm()
   }
 }
 </script>

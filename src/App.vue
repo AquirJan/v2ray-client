@@ -48,4 +48,14 @@ export default {
   stroke: currentColor;
   fill: currentColor;
 }
+
+.dis-grid {
+  display: grid;
+}
+.grid-2-cols {
+  grid-template-columns: 1fr 1fr;
+}
+.grid-gap-small {
+  grid-gap: 1rem;
+}
 </style>
