@@ -17,14 +17,14 @@
       <p>有疑问请联系微信号</p>
       <img :src="`${publicPath}images/contact.JPG`" class="pay-img"/>
     </div>
-    <button type="button" class="btn btn-outline-primary mb-3" @click="showClients = !showClients">客户端下载</button>
+    <button type="button" class="btn btn-outline-primary mb-3" @click="showClients = !showClients">客户端下载 ( 联系管理员获取二维码 )</button>
     <ul v-if="showClients" class="list-group list-group-flush">
       <li class="list-group-item">
         <a :href="`${publicPath}clients/app-universal-release.apk`" class="stretched-link block-link" download="app-universal-release.apk">android</a>
       </li>
       <li class="list-group-item">
         <a :href="`${publicPath}clients/vn-complete.zip`" download="vn-complete.zip">windows</a>
-        <a :href="`${publicPath}tutorials/windows.docx`" download="windows-tutorial.docx">教程.docx</a>
+        <!-- <a :href="`${publicPath}tutorials/windows.docx`" download="windows-tutorial.docx">教程.docx</a> -->
       </li>
       <li class="list-group-item">
         <a :href="`${publicPath}clients/V2rayU.dmg`" download="V2rayU.dmg">mac os</a>
