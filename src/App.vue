@@ -58,4 +58,16 @@ export default {
 .grid-gap-small {
   grid-gap: 1rem;
 }
+
+.qrcode-wrap {
+  display: grid;
+  justify-items: center;
+  gap: .5rem;
+}
+.qrcode-img {
+  display: block;
+}
+.qrcode-config {
+  word-break: break-all;
+}
 </style>

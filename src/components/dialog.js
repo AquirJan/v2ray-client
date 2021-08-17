@@ -23,12 +23,14 @@ export default class samoDialog {
             color: #333;
             background-color: #efefef;
             box-shadow: 0 0 20px -2px #666;
+            max-width: 80%;
+            overflow: hidden;
         `
         this.dialogWrap.style.cssText = `
             position: fixed;
             display: grid;
             align-items: center;
-            justify-content: center;
+            justify-items: center;
             top: 0;
             left: 0;
             width: 100%;

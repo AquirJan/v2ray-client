@@ -116,6 +116,9 @@
           <span>Traffic :</span>
           <span v-if="item.needUpdate"><input  type="number" class="form-control form-control-sm inline-form-control" v-model="item.traffic" value="0" min=0 max=99 maxlength="1"/>GB</span>
           <span v-else>{{item.traffic}} GB</span>
+          <span>
+            <button type="button" class="btn btn-primary btn-sm" @click="genQrcode($event, item, index)">qrcode</button>
+          </span>
         </div>
         <div class="addon-btns">
           <div class="btn-group" role="group" aria-label="Basic example" >
@@ -342,6 +345,19 @@ export default {
     resetForm() {
       this.$set(this, 'form', cloneDeep(this.defaultFormData));
     },
+    genQrcode($even, item){
+      this.dialogIns = new samoDialog({
+        content: 'generating...'
+      })
+      axios.post('/xray/genQrcode', item).then(res => {
+        const {success, data, message} = res;
+        if (success) {
+          this.dialogIns.setContent(`<div class="qrcode-wrap"><img src="${data.url}" class="qrcode-img"/><p class="qrcode-config">${data.config}</p></div>`)
+        } else {
+          this.dialogIns.setContent(message)
+        }
+      })
+    },
     getList(params={}) {
       this.loadingList = true;
       this.listData = []
@@ -425,4 +441,5 @@ export default {
   padding: 0 .5rem;
   font-size: 1.2rem;
 }
+
 </style>
