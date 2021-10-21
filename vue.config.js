@@ -1,4 +1,5 @@
 // const path = require('path');
+const CompressionPlugin = require("compression-webpack-plugin");
 module.exports = {
   configureWebpack: {
     resolve: {
@@ -19,6 +20,7 @@ module.exports = {
         logLevel: 'debug',
         changeOrigin: true
       }
-    }
+    },
+    plugins: [new CompressionPlugin()],
   }
 }
