@@ -1,5 +1,5 @@
 // const path = require('path');
-const CompressionPlugin = require("compression-webpack-plugin");
+// const CompressionPlugin = require("compression-webpack-plugin");
 module.exports = {
   configureWebpack: {
     resolve: {
@@ -21,6 +21,5 @@ module.exports = {
         changeOrigin: true
       }
     },
-    plugins: [new CompressionPlugin()],
   }
 }
