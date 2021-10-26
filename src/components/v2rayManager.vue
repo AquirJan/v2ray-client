@@ -368,7 +368,8 @@ export default {
         if (success && data) {
           this.listData = data;
           this.listData.forEach((val) => {
-            val['offDateFormat'] = new Date(new Date(val.off_date).toString()).format('yyyy-MM-dd hh:mm:ss')
+            const _tmpOffDate = new Date(val.off_date).format('yyyy-MM-dd hh:mm:ss')
+            val['offDateFormat'] = new Date(`${_tmpOffDate} GMT`).format('yyyy-MM-dd hh:mm:ss')
             val['needUpdate'] = false;
             val['noChanged'] = true;
           })
