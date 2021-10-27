@@ -270,6 +270,11 @@ export default {
       //   })
       // }
     },
+    getTimeZone() {
+      const date = new Date().getTimezoneOffset();
+      let timezone = -date / 60;
+      return timezone;
+    },
     restartService() {
       this.dialogIns = new samoDialog({
         content: 'restarting...'
@@ -296,6 +301,7 @@ export default {
       }
       // this.dialogIns.setContent(_params.offDateFormat)
       _params['off_date'] = _params.offDateFormat
+      _params['timezone'] = this.getTimeZone()
       axios.post('/xray/updateClient', _params).then(res => {
         const {success, message} = res;
         this.dialogIns.setContent(message)
@@ -334,6 +340,7 @@ export default {
       this.dialogIns = new samoDialog({
         content: 'loading...'
       })
+      this.form['timezone'] = this.getTimeZone()
       axios.post('/xray/addClient', this.form).then(res => {
         this.dialogIns.setContent(res.message)
         if (res.success) {
@@ -368,8 +375,8 @@ export default {
         if (success && data) {
           this.listData = data;
           this.listData.forEach((val) => {
-            const _tmpOffDate = new Date(val.off_date).format('yyyy-MM-dd hh:mm:ss')
-            val['offDateFormat'] = new Date(`${_tmpOffDate} GMT`).format('yyyy-MM-dd hh:mm:ss')
+            const _tmpOffDate = new Date(val.off_date).utcFormat('yyyy/MM/dd hh:mm:ss')
+            val['offDateFormat'] = new Date(`${_tmpOffDate} GMT`).format('yyyy/MM/dd hh:mm:ss')
             val['needUpdate'] = false;
             val['noChanged'] = true;
           })

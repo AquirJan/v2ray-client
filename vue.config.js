@@ -19,7 +19,12 @@ module.exports = {
         // target: 'http://www.samojum.ml:3030', // produt
         logLevel: 'debug',
         changeOrigin: true
-      }
+      },
+      // '/xray': {
+      //   target: 'http://www.samojum.ml', // produt
+      //   logLevel: 'debug',
+      //   changeOrigin: true
+      // }
     },
   }
 }
