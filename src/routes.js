@@ -6,6 +6,7 @@ import duesPage from './components/duesPage.vue'
 import loginPage from './components/loginPage.vue'
 import profilePage from './components/profilePage.vue'
 import profileSbPage from './components/profileSbPage.vue'
+import queryClientTraffic from './components/queryClientTraffic.vue'
 import textPage from './components/test.vue'
 import axios from 'axios';
 
@@ -44,6 +45,11 @@ export const routes = [
     path: '/profilesb',
     name: 'profilesb',
     component: profileSbPage,
+  },
+  {
+    path: '/qct',
+    name: 'queryClientTraffic',
+    component: queryClientTraffic,
   },
   {
     path: '/test',
