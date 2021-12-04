@@ -12,7 +12,7 @@ import axios from 'axios';
 
 Vue.use(VueRouter)
 
-const publicPages = ['login', 'dues', 'profile', 'profilesb', 'test'];
+const publicPages = ['login', 'dues', 'profile', 'profilesb', 'test', 'qct'];
 
 export const routes = [
   {
@@ -48,7 +48,7 @@ export const routes = [
   },
   {
     path: '/qct',
-    name: 'queryClientTraffic',
+    name: 'qct',
     component: queryClientTraffic,
   },
   {
