@@ -53,8 +53,9 @@ export default {
           this.result = data;
           this.result['total'] = this.formatSize(data.up+data.down)
           this.result['humanOffDate'] = new Date(data.off_date).utcFormat('yyyy/MM/dd hh:mm:ss')
-          
-          this.result['leavings'] = this.formatSize(data.traffic * 1024 * 1024 * 1024 - data.up-data.down)
+          let _leave = data.traffic * 1024 * 1024 * 1024 - data.up-data.down
+          _leave = _leave <= 0 ? 0 : this.formatSize(_leave)
+          this.result['leavings'] = _leave
           this.dialogIns.close()
         } else {
           this.dialogIns.setContent(message);
