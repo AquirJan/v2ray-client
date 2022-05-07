@@ -6,9 +6,9 @@
       <button type="button" class="btn btn-primary btn-sm"  @click="queryClient">查询</button>
     </div>
     <ul class="info-list" v-if="result">
-      <li>目前使用量：{{result.total}}</li>
-      <li>总可用量：{{result.traffic}}GB/月</li>
-      <li>剩余可用量：{{result.leavings}} (当使用量太小的时候不予精确显示）</li>
+      <li>目前使用量：{{result.usedTotal}}</li>
+      <li>总可用量：{{result.totalTraffic}}/月</li>
+      <li>剩余可用量：{{result.remainTraffic}} (当使用量太小的时候不予精确显示)</li>
       <li>账号到期日：{{result.humanOffDate}}</li>
     </ul>
   </div>
@@ -48,14 +48,18 @@ export default {
       })
       axios.post("/xray/queryClientTraffic", this.form).then((res) => {
         const {success, data, message} = res;
-        console.log(data)
+        // console.log(data)
         if (success) {
           this.result = data;
-          this.result['total'] = this.formatSize(data.up+data.down)
+          let _down = data.down < 0 ? 0 : data.down;
           this.result['humanOffDate'] = new Date(data.off_date).utcFormat('yyyy/MM/dd hh:mm:ss')
-          let _leave = data.traffic * 1024 * 1024 * 1024 - data.up-data.down
-          _leave = _leave <= 0 ? 0 : this.formatSize(_leave)
-          this.result['leavings'] = _leave
+          this.result['usedTotal'] = this.formatSize(data.up+_down)
+          let _remainTraffic = data.down < 0 ? Math.abs(data.down) : 0
+          let _totalTraffic = data.traffic * Math.pow(1024, 3)+_remainTraffic;
+          this.result['totalTraffic'] = this.formatSize(_totalTraffic)
+          let _remain = _totalTraffic-data.up-_down
+          _remain = _remain < 0 ? 0 : _remain;
+          this.result['remainTraffic'] = this.formatSize(_remain)
           this.dialogIns.close()
         } else {
           this.dialogIns.setContent(message);

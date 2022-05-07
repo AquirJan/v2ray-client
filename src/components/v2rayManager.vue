@@ -102,9 +102,10 @@
         <div class="cntr-mb" v-if="!item.needUpdate">uuid: {{item.uuid}}</div>
         <div class="cntr-mb uuid-modify" v-else><span>uuid: </span><input class="form-control form-control-sm inline-form-control full-width" v-model="item.uuid" /></div>
         <div class="list-info">
-          <span>上行：{{formatSize(item.up)}}</span>
-          <span>下行：{{formatSize(item.down)}}</span>
+          <span>up：{{formatSize(item.up)}}</span>
+          <span>down：{{formatSize(item.down)}}</span>
           <span>total：{{formatSize(item.up+item.down)}}</span>
+          <span>remain: {{formatSize(item.remainTraffic)}}</span>
           <button type="button" class="btn btn-primary btn-sm" @click="resetTraffic($event, item, index)">reset</button>
         </div>
         <div class="change-date-wrap">
@@ -379,6 +380,12 @@ export default {
             val['offDateFormat'] = new Date(`${_tmpOffDate} GMT`).format('yyyy/MM/dd hh:mm:ss')
             val['needUpdate'] = false;
             val['noChanged'] = true;
+            if (val.down<0) {
+              val['remainTraffic'] = Math.abs(val.down)
+              val.down = 0;
+            } else {
+              val['remainTraffic'] = 0;
+            }
           })
           this.listDataOrigin = cloneDeep(this.listData);
         }
