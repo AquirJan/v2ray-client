@@ -111,14 +111,10 @@ export default {
       priceList: [
         {
           price: `5元`,
-          traffic: '500m/月'
-        },
-        {
-          price: `10元`,
           traffic: '3g/月'
         },
         {
-          price: `15元`,
+          price: `10元`,
           traffic: '8g/月'
         },
         {
