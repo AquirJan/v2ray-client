@@ -115,7 +115,7 @@ export default {
         },
         {
           price: `10元`,
-          traffic: '8g/月'
+          traffic: '5g/月'
         },
         {
           price: '自定义(15g起)',
