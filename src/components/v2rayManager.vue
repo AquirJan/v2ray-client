@@ -376,10 +376,8 @@ export default {
         if (success && data) {
           this.listData = data;
           this.listData.forEach((val) => {
-            console.log(val.off_date_utc)
-            // const _tmpOffDate = new Date(val.off_date).utcFormat('yyyy/MM/dd hh:mm:ss')
-            // console.log(_tmpOffDate)
-            val['offDateFormat'] = new Date(`${val.off_date_utc} UTC`).format('yyyy/MM/dd hh:mm:ss')
+            // console.log(val.off_date_utc)
+            val['offDateFormat'] = new Date(val.off_date_utc+' UTC').format('yyyy/MM/dd hh:mm:ss')
             val['needUpdate'] = false;
             val['noChanged'] = true;
             if (val.down<0) {
