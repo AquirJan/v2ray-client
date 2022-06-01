@@ -196,7 +196,7 @@ export default {
     },
     resetOffDate($event, item, index) {
       this.$set(this.listData[index], 'off_date', this.listDataOrigin[index].off_date)
-      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].off_date).format('yyyy-MM-dd hh:mm:ss'))
+      this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].off_date).format('yyyy/MM/dd hh:mm:ss'))
       this.$set(this.listData[index], 'noChanged', true)
     },
     resetTraffic($event, item) {
