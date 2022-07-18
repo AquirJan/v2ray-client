@@ -199,14 +199,17 @@ export default {
       this.$set(this.listData[index], 'offDateFormat', new Date(this.listDataOrigin[index].off_date).format('yyyy/MM/dd hh:mm:ss'))
       this.$set(this.listData[index], 'noChanged', true)
     },
-    resetTraffic($event, item) {
-      this.dialogIns = new samoDialog({
-        content: 'reseting...'
-      })
-      axios.post('/xray/resetTraffic', item).then(res => {
+    async resetTraffic($event, item) {
+      try {
+        this.dialogIns = new samoDialog({
+          content: 'reseting...'
+        })
+        const res = await axios.post('/xray/resetTraffic', item)
         this.dialogIns.setContent(res.message)
         this.getList()
-      })
+      } catch(error) {
+        this.showErrorTip(error.message)
+      }
     },
     formatSize(size, pointLength, units) {
       let unit;
@@ -235,16 +238,28 @@ export default {
       this.filterContent = ''
       this.getList()
     },
+    showErrorTip(message) {
+      if (this.dialogIns) {
+        this.dialogIns.setContent(message)
+      } else {
+        this.dialogIns = new samoDialog({
+          content: message
+        })
+      }
+    },
     deleteAction($event, item) {
-      const _confirm = confirm('删除账号?')
-      if (_confirm) {
+      try {
+        const _confirm = confirm('删除账号?')
         this.dialogIns = new samoDialog({
           content: 'deleting...'
         })
-        axios.post('/xray/deleteClient', item).then(res => {
+        if (_confirm) {
+          const res = await axios.post('/xray/deleteClient', item)
           this.dialogIns.setContent(res.message)
           this.getList()
-        })
+        }
+      } catch(error) {
+        this.showErrorTip(error.message)
       }
     },
     calcOverDue(item) {
@@ -276,14 +291,17 @@ export default {
       let timezone = -date / 60;
       return timezone;
     },
-    restartService() {
-      this.dialogIns = new samoDialog({
-        content: 'restarting...'
-      })
-      axios.post('/xray/restartService').then(res => {
+    async restartService() {
+      try {
+        this.dialogIns = new samoDialog({
+          content: 'restarting...'
+        })
+        const res = await axios.post('/xray/restartService')
         this.dialogIns.setContent(res.message)
         this.getList()
-      })
+      } catch(error) {
+        this.showErrorTip(error.message)
+      }
     },
     changeOffDate($event, item) {
       this.updateClient($event, item)
@@ -293,17 +311,18 @@ export default {
       _listData[index]['needUpdate'] = true;
       this.$set(this,'listData', _listData)
     },
-    updateClient($event, item) {
-      this.dialogIns = new samoDialog({
-        content: 'updating...'
-      })
-      let _params = {
-        ...item
-      }
-      // this.dialogIns.setContent(_params.offDateFormat)
-      _params['off_date'] = _params.offDateFormat
-      _params['timezone'] = this.getTimeZone()
-      axios.post('/xray/updateClient', _params).then(res => {
+    async updateClient($event, item) {
+      try {
+        this.dialogIns = new samoDialog({
+          content: 'updating...'
+        })
+        let _params = {
+          ...item
+        }
+        // this.dialogIns.setContent(_params.offDateFormat)
+        _params['off_date'] = _params.offDateFormat
+        _params['timezone'] = this.getTimeZone()
+        const res = await axios.post('/xray/updateClient', _params)
         const {success, message} = res;
         this.dialogIns.setContent(message)
         this.dialogIns.setDialogStyle({
@@ -311,65 +330,73 @@ export default {
           'color': success ? '#333' : '#fff',
         })
         this.getList()
-      })
+      } catch(error) {
+        this.showErrorTip(error.message)
+      }
     },
     generateUUID() {
       this.form.uuid = uuidv1()
     },
-    updateTrafficAction(){
-      this.dialogIns = new samoDialog({
-        content: 'updating...'
-      })
-      axios.post('/xray/updateTraffic').then(res => {
+    async updateTrafficAction(){
+      try {
+        this.dialogIns = new samoDialog({
+          content: 'updating...'
+        })
+        const res = await axios.post('/xray/updateTraffic')
         this.dialogIns.setContent(res.message)
         this.getList()
-      })
+      } catch(error) {
+        this.showErrorTip(error.message)
+      }
     },
-    submitForm() {
-      if (!this.form.email) {
+    async submitForm() {
+      try {
         this.dialogIns = new samoDialog({
-          content: 'email not avaliable'
+          content: 'loading...'
         })
-        return;
-      }
-      if (!this.form.uuid) {
-        this.dialogIns = new samoDialog({
-          content: 'uuid not avaliable'
-        })
-        return;
-      }
-      this.dialogIns = new samoDialog({
-        content: 'loading...'
-      })
-      this.form['timezone'] = this.getTimeZone()
-      axios.post('/xray/addClient', this.form).then(res => {
+        if (!this.form.email) {
+          this.dialogIns.setContent('email not avaliable')
+          return;
+        }
+        if (!this.form.uuid) {
+          this.dialogIns.setContent('uuid not avaliable')
+          return;
+        }
+        this.form['timezone'] = this.getTimeZone()
+        const res = await axios.post('/xray/addClient', this.form)
         this.dialogIns.setContent(res.message)
         if (res.success) {
           this.getList();
           this.resetForm()
         }
-      })
+      } catch(error) {
+        this.showErrorTip(error.message)
+      }
     },
     resetForm() {
       this.$set(this, 'form', cloneDeep(this.defaultFormData));
     },
     genQrcode($even, item){
-      this.dialogIns = new samoDialog({
-        content: 'generating...'
-      })
-      axios.post('/xray/genQrcode', item).then(res => {
+      try {
+        this.dialogIns = new samoDialog({
+          content: 'generating...'
+        })
+        const res = await axios.post('/xray/genQrcode', item)
         const {success, data, message} = res;
         if (success) {
           this.dialogIns.setContent(`<div class="qrcode-wrap"><img src="${data.url}" class="qrcode-img"/><p class="qrcode-config">${data.config}</p></div>`)
         } else {
           this.dialogIns.setContent(message)
         }
-      })
+      } catch(error) {
+        this.showErrorTip(error.message)
+      }
     },
-    getList(params={}) {
-      this.loadingList = true;
-      this.listData = []
-      axios.post('/xray/listClients', params).then(res => {
+    async getList(params={}) {
+      try {
+        this.loadingList = true;
+        this.listData = []
+        const res = await axios.post('/xray/listClients', params)
         this.loadingList = false;
         this.listData = []
         const {success, data} = res;
@@ -389,7 +416,9 @@ export default {
           })
           this.listDataOrigin = cloneDeep(this.listData);
         }
-      })
+      }  catch(error) {
+        this.showErrorTip(error.message)
+      }
     }
   },
   mounted() {

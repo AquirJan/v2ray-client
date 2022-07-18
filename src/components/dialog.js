@@ -61,6 +61,8 @@ export default class samoDialog {
     }
     close() {
         document.body.removeChild(this.dialogWrap)
+        this.dialogWrap = null;
+        this.dialog = null;
     }
     setContent(content) {
         this.dialog.innerHTML = content

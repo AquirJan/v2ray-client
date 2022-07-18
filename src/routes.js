@@ -7,7 +7,9 @@ import loginPage from './components/loginPage.vue'
 import profilePage from './components/profilePage.vue'
 import profileSbPage from './components/profileSbPage.vue'
 import queryClientTraffic from './components/queryClientTraffic.vue'
-import textPage from './components/test.vue'
+import testPage from './components/test.vue'
+import userInfo from './components/userInfo.vue'
+import nestedPage from './components/nested.vue'
 import axios from 'axios';
 
 Vue.use(VueRouter)
@@ -52,9 +54,25 @@ export const routes = [
     component: queryClientTraffic,
   },
   {
+    path: '/user',
+    name: 'user',
+    component: nestedPage,
+    redirect: {
+      name: "user-info",
+    },
+    children: [
+      {
+        path: 'info',
+        name: "user-info",
+        title: '用户信息',
+        component: userInfo,
+      },
+    ]
+  },
+  {
     path: '/test',
     name: 'test',
-    component: textPage,
+    component: testPage,
   },
   {
     path: '*',    // 此处需特别注意至于最底部
@@ -65,6 +83,7 @@ export const routes = [
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 })
 

@@ -7,8 +7,13 @@
       <div class="form-group">
         <input v-model="form.password" type="password" class="form-control" aria-describedby="Password" placeholder="Password">
       </div>
-      <div class="text-right">
+      <div class="text-right cntr-mb">
         <button type="submit" class="btn btn-success" :disabled="loading" @click="loginAction">Sign In</button>
+      </div>
+      <div class="text-center">
+        <!-- <a href="https://gitlab.com/oauth/authorize?client_id=c1b6cc0c127e721a912d0f90b84d7cfb53c7438359a8bb1eacd71a53312c01eb&redirect_uri=http://localhost:8686/xray/createUser&response_type=code&scope=profile">gitlab</a> -->
+        <a href="https://github.com/login/oauth/authorize?client_id=4654197a939c1a27bd9e&redirect_uri=http://localhost/user/info">gitlab</a>
+        <!-- <button type="submit" class="btn btn-primary" style="width:100%;" @click="gitlabSignIn">gitlab</button> -->
       </div>
     </form>
   </div>
@@ -47,6 +52,9 @@ export default {
     }
   },
   methods: {
+    gitlabSignIn() {
+      location.href = 'www.google.com'
+    },
     loginAction() {
       if (!this.form.name) {
         return new samoDialog({
