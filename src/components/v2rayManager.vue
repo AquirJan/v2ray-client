@@ -81,7 +81,7 @@
       <li class="list-group-item" v-for="(item, index) in listData" :key="index">
         <div class="list-title cntr-flex justify-between aligni-center cntr-mb">
           <span class="cntr-grid cntr-gaf-column aligni-center cntr-gg-xsm" v-if="!item.needUpdate">
-            Email: {{item.email}} [{{item.remark}}]
+            Email: {{item.email}} [{{item.remark}}] <span class="badge badge-dark" v-if="calcOverDue(item) && !item.needUpdate">overdue</span>
             <span class="price-bage">
               <svg class="icom icom-coin-yen" viewBox="0 0 32 32">
                 <path d="M15 2c-8.284 0-15 6.716-15 15s6.716 15 15 15c8.284 0 15-6.716 15-15s-6.716-15-15-15zM15 29c-6.627 0-12-5.373-12-12s5.373-12 12-12c6.627 0 12 5.373 12 12s-5.373 12-12 12z"></path>
@@ -96,7 +96,6 @@
             </div>
             <div>Remark: <input class="form-control form-control-sm" v-model="item.remark" /></div>
           </template>
-          <span class="badge badge-dark" v-if="calcOverDue(item) && !item.needUpdate">overdue</span>
         </div>
         <!-- <div>Port: {{item.port}}</div> -->
         <div class="cntr-mb" v-if="!item.needUpdate">uuid: {{item.uuid}}</div>
@@ -247,7 +246,7 @@ export default {
         })
       }
     },
-    deleteAction($event, item) {
+    async deleteAction($event, item) {
       try {
         const _confirm = confirm('删除账号?')
         this.dialogIns = new samoDialog({
@@ -376,7 +375,7 @@ export default {
     resetForm() {
       this.$set(this, 'form', cloneDeep(this.defaultFormData));
     },
-    genQrcode($even, item){
+    async genQrcode($even, item){
       try {
         this.dialogIns = new samoDialog({
           content: 'generating...'
