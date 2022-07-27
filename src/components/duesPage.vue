@@ -28,21 +28,27 @@
     </div>
     -->
     <hr />
-    <div>
-      <p>具体请联系微信号</p>
-      <img :src="`${publicPath}images/contact.JPG`" class="pay-img"/>
+    <div class="cntr-mb">
+      <p>具体请联系telegram或邮件<a href="mailto:wing.free0@gmail.com">wing.free0@gmail.com</a></p>
+      <img :src="`${publicPath}images/contact.jpg`" class="pay-img"/>
     </div>
     <button type="button" class="btn btn-outline-primary mb-3" @click="showClients = !showClients">客户端下载 ( 联系管理员获取二维码 )</button>
     <ul v-if="showClients" class="list-group list-group-flush">
       <li class="list-group-item">
+        <a href="https://github.com/xtls/Xray-core/releases">内核</a>
+      </li>
+      <li class="list-group-item">
         <a :href="`${publicPath}clients/app-universal-release.apk`" class="stretched-link block-link" download="app-universal-release.apk">android</a>
+        <a href="https://github.com/2dust/v2rayNG/releases">更多版本</a>
       </li>
       <li class="list-group-item">
         <a :href="`${publicPath}clients/vn-complete.zip`" download="vn-complete.zip">windows</a>
+        <a href="https://github.com/2dust/v2rayN/releases">更多版本</a>
         <!-- <a :href="`${publicPath}tutorials/windows.docx`" download="windows-tutorial.docx">教程.docx</a> -->
       </li>
       <li class="list-group-item">
-        <a :href="`${publicPath}clients/V2rayU.dmg`" download="V2rayU.dmg">mac os</a>
+        <a :href="`${publicPath}clients/qv2ray.zip`" download="qv2ray.zip">mac os（Intel/apple silicon）</a>
+        <p>mac os（apple silicon）建议使用 shadowrocket (美区)</p>
         <a href="https://www.jianshu.com/p/d2558583872b">安装教程</a>
       </li>
       <li class="list-group-item">
