@@ -38,7 +38,7 @@
         <a href="https://github.com/xtls/Xray-core/releases">内核</a>
       </li>
       <li class="list-group-item">
-        <a :href="`${publicPath}clients/app-universal-release.apk`" class="stretched-link block-link" download="app-universal-release.apk">android</a>
+        <a :href="`${publicPath}clients/app-universal-release.apk`" download="app-universal-release.apk">android</a>
         <a href="https://github.com/2dust/v2rayNG/releases">更多版本</a>
       </li>
       <li class="list-group-item">
