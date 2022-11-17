@@ -38,16 +38,16 @@ export const routes = [
     name: 'login',
     component: loginPage,
   },
-  {
-    path: '/profile',
-    name: 'profile',
-    component: profilePage,
-  },
-  {
-    path: '/profilesb',
-    name: 'profilesb',
-    component: profileSbPage,
-  },
+  // {
+  //   path: '/profile',
+  //   name: 'profile',
+  //   component: profilePage,
+  // },
+  // {
+  //   path: '/profilesb',
+  //   name: 'profilesb',
+  //   component: profileSbPage,
+  // },
   {
     path: '/qct',
     name: 'qct',

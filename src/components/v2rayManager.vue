@@ -19,6 +19,20 @@
             <input type="text" class="form-control" v-model="form.remark"/>
           </div>
         </div>
+        <div class="form-group dis-grid grid-2-cols grid-gap-small">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >port</span>
+            </div>
+            <input type="number" class="form-control" v-model="form.port"/>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" >api</span>
+            </div>
+            <input class="form-control" v-model="form.api"/>
+          </div>
+        </div>
         <div class="form-group">
           <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -35,7 +49,7 @@
             <div class="input-group-prepend">
               <span class="input-group-text" >offDate</span>
             </div>
-            <input type="datetime" class="form-control" v-model="form.off_date"/>
+            <input type="datetime" class="x-form-control" v-model="form.off_date"/>
           </div>
         </div>
         <div class="form-group dis-grid grid-2-cols grid-gap-small">
@@ -95,9 +109,13 @@
               <div>Price: <input type="number" step="0.01" class="form-control form-control-sm" v-model="item.price"/></div>
             </div>
             <div>Remark: <input class="form-control form-control-sm" v-model="item.remark" /></div>
+            
           </template>
         </div>
-        <!-- <div>Port: {{item.port}}</div> -->
+        <div class="cntr-mb" v-if="!item.needUpdate">Port: {{item.port}}</div>
+        <div class="cntr-mb" v-else>Port: <input class="form-control form-control-sm inline-form-control full-width" v-model="item.port" /></div>
+        <div class="cntr-mb" v-if="!item.needUpdate">Api: {{item.api}}</div>
+        <div class="cntr-mb" v-else>Api: <input class="form-control form-control-sm inline-form-control full-width" v-model="item.api" /></div>
         <div class="cntr-mb" v-if="!item.needUpdate">uuid: {{item.uuid}}</div>
         <div class="cntr-mb uuid-modify" v-else><span>uuid: </span><input class="form-control form-control-sm inline-form-control full-width" v-model="item.uuid" /></div>
         <div class="list-info">
@@ -205,6 +223,10 @@ export default {
         })
         const res = await axios.post('/xray/resetTraffic', item)
         this.dialogIns.setContent(res.message)
+        this.dialogIns.setDialogStyle({
+          'background-color': res.success ? '#efefef' : '#F56C6C',
+          'color': res.success ? '#333' : '#fff',
+        })
         this.getList()
       } catch(error) {
         this.showErrorTip(error.message)
@@ -239,6 +261,10 @@ export default {
     },
     showErrorTip(message) {
       if (this.dialogIns) {
+        this.dialogIns.setDialogStyle({
+          'background-color': '#F56C6C',
+          'color': '#fff',
+        })
         this.dialogIns.setContent(message)
       } else {
         this.dialogIns = new samoDialog({
@@ -255,6 +281,10 @@ export default {
         if (_confirm) {
           const res = await axios.post('/xray/deleteClient', item)
           this.dialogIns.setContent(res.message)
+          this.dialogIns.setDialogStyle({
+            'background-color': res.success ? '#efefef' : '#F56C6C',
+            'color': res.success ? '#333' : '#fff',
+          })
           this.getList()
         }
       } catch(error) {
@@ -291,12 +321,17 @@ export default {
       return timezone;
     },
     async restartService() {
+      console.log('restartService')
       try {
         this.dialogIns = new samoDialog({
           content: 'restarting...'
         })
         const res = await axios.post('/xray/restartService')
         this.dialogIns.setContent(res.message)
+        this.dialogIns.setDialogStyle({
+          'background-color': res.success ? '#efefef' : '#F56C6C',
+          'color': res.success ? '#333' : '#fff',
+        })
         this.getList()
       } catch(error) {
         this.showErrorTip(error.message)
@@ -328,7 +363,9 @@ export default {
           'background-color': success ? '#efefef' : '#F56C6C',
           'color': success ? '#333' : '#fff',
         })
-        this.getList()
+        if (success){
+          this.getList()
+        }
       } catch(error) {
         this.showErrorTip(error.message)
       }
@@ -343,6 +380,10 @@ export default {
         })
         const res = await axios.post('/xray/updateTraffic')
         this.dialogIns.setContent(res.message)
+        this.dialogIns.setDialogStyle({
+          'background-color': success ? '#efefef' : '#F56C6C',
+          'color': success ? '#333' : '#fff',
+        })
         this.getList()
       } catch(error) {
         this.showErrorTip(error.message)
@@ -352,6 +393,10 @@ export default {
       try {
         this.dialogIns = new samoDialog({
           content: 'loading...'
+        })
+        this.dialogIns.setDialogStyle({
+          'background-color': '#F56C6C',
+          'color': '#fff',
         })
         if (!this.form.email) {
           this.dialogIns.setContent('email not avaliable')
@@ -364,6 +409,10 @@ export default {
         this.form['timezone'] = this.getTimeZone()
         const res = await axios.post('/xray/addClient', this.form)
         this.dialogIns.setContent(res.message)
+        this.dialogIns.setDialogStyle({
+          'background-color': success ? '#efefef' : '#F56C6C',
+          'color': success ? '#333' : '#fff',
+        })
         if (res.success) {
           this.getList();
           this.resetForm()
@@ -387,6 +436,10 @@ export default {
         } else {
           this.dialogIns.setContent(message)
         }
+        this.dialogIns.setDialogStyle({
+          'background-color': success ? '#efefef' : '#F56C6C',
+          'color': success ? '#333' : '#fff',
+        })
       } catch(error) {
         this.showErrorTip(error.message)
       }
