@@ -25,6 +25,9 @@
               <span class="input-group-text" >port</span>
             </div>
             <input type="number" class="form-control" v-model="form.port"/>
+            <div class="input-group-append">
+              <button type="button" class="btn btn-primary btn-sm" @click="generatePort">generate</button>
+            </div>
           </div>
           <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -177,7 +180,7 @@ export default {
         traffic: 20,
         uuid: '',
         email: '',
-        port: 443,
+        port: 0,
         price: 15.00,
         remark: '',
         off_date: (new Date(new Date().setDate(new Date().getDate()+1)).format('yyyy/MM/dd hh:mm:ss')),
@@ -253,7 +256,6 @@ export default {
       let _listData = cloneDeep(this.listData);
       _listData[index]['needUpdate'] = false;
       this.$set(this,'listData', _listData)
-      
     },
     resetAction(){
       this.filterContent = ''
@@ -353,6 +355,7 @@ export default {
         let _params = {
           ...item
         }
+        _params['port'] = Number(_params.port)
         // this.dialogIns.setContent(_params.offDateFormat)
         _params['off_date'] = _params.offDateFormat
         _params['timezone'] = this.getTimeZone()
@@ -373,6 +376,14 @@ export default {
     generateUUID() {
       this.form.uuid = uuidv1()
     },
+    getRandomIntInclusive(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1) + min); //The maximum is inclusive and the minimum is inclusive
+    },
+    generatePort(){
+      this.form['port'] = this.getRandomIntInclusive(1000, 2000)
+    },
     async updateTrafficAction(){
       try {
         this.dialogIns = new samoDialog({
@@ -381,8 +392,8 @@ export default {
         const res = await axios.post('/xray/updateTraffic')
         this.dialogIns.setContent(res.message)
         this.dialogIns.setDialogStyle({
-          'background-color': success ? '#efefef' : '#F56C6C',
-          'color': success ? '#333' : '#fff',
+          'background-color': res.success ? '#efefef' : '#F56C6C',
+          'color': res.success ? '#333' : '#fff',
         })
         this.getList()
       } catch(error) {
@@ -406,12 +417,21 @@ export default {
           this.dialogIns.setContent('uuid not avaliable')
           return;
         }
+        if (!this.form.port) {
+          this.dialogIns.setContent('port not avaliable')
+          return;
+        }
+        if (!this.form.api) {
+          this.dialogIns.setContent('api not avaliable')
+          return;
+        }
         this.form['timezone'] = this.getTimeZone()
+        this.form['port'] = Number(this.form.port)
         const res = await axios.post('/xray/addClient', this.form)
         this.dialogIns.setContent(res.message)
         this.dialogIns.setDialogStyle({
-          'background-color': success ? '#efefef' : '#F56C6C',
-          'color': success ? '#333' : '#fff',
+          'background-color': res.success ? '#efefef' : '#F56C6C',
+          'color': res.success ? '#333' : '#fff',
         })
         if (res.success) {
           this.getList();
@@ -423,6 +443,7 @@ export default {
     },
     resetForm() {
       this.$set(this, 'form', cloneDeep(this.defaultFormData));
+      this.generatePort()
     },
     async genQrcode($even, item){
       try {

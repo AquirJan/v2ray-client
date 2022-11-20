@@ -1,5 +1,6 @@
 // const path = require('path');
 // const CompressionPlugin = require("compression-webpack-plugin");
+
 module.exports = {
   configureWebpack: {
     resolve: {
@@ -8,7 +9,7 @@ module.exports = {
       },
     },
   },
-  publicPath: process.env.NODE_ENV === 'production' ? '/xrayweb' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   devServer: {
     // port: '8081',
     open: true,
