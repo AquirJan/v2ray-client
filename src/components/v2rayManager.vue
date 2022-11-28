@@ -328,7 +328,9 @@ export default {
         this.dialogIns = new samoDialog({
           content: 'restarting...'
         })
-        const res = await axios.post('/xray/restartService')
+        const res = await axios.post('/xray/restartService', {
+          timeout: 30*1000
+        })
         this.dialogIns.setContent(res.message)
         this.dialogIns.setDialogStyle({
           'background-color': res.success ? '#efefef' : '#F56C6C',
